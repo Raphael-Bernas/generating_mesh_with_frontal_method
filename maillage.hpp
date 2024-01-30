@@ -55,6 +55,27 @@ public:
     bool operator==(const Arete& autre) const {     // Surcharge de l'opérateur ==
         return (triangle == autre.triangle) && (num == autre.num) ;
     }
+    Sommet& determine_sommet(int num_sommet) {
+        Sommet* sommets_trier[3] ;
+        int i_minx=0;
+        for(int i=0;i<3;++i){
+            if(*(triangle->sommets[i_minx]).x>*(triangle->sommets[i]).x){
+                i_minx=i;
+            }
+        }
+        sommets_trier[0]=triangle->sommets[i_minx];
+        int i_maxy=0;
+        for(int i=0;i<3;++i){
+            if((*(triangle->sommets[i_miny]).y<*(triangle->sommets[i]).y)&&(i!=i_minx)){
+                i_maxy=i;
+            }
+        }
+        sommets_trier[1]=triangle->sommets[i_maxy];
+        return(sommets_trier[(num_sommet+num-1)%3]);
+    }
+    bool operator|(const Arete& autre) const {
+        return(0);
+    }
 };
 class Domaine {
 public:
