@@ -1,10 +1,10 @@
 # SIM202
 
-##Partie 1
+## Partie 1
 
-###a)
-###b)
+### a)
+### b)
 
-##Partie 2
+## Partie 2
 
-###a)
+### a)
