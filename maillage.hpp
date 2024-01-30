@@ -74,7 +74,11 @@ public:
         return(sommets_trier[(num_sommet+num-1)%3]);
     }
     bool operator|(const Arete& autre) const {
-        return(0);
+        Sommet A = *(autre.determine_sommet(0));
+        Sommet B = *(autre.determine_sommet(1));
+        Sommet C = *(determine_sommet(0));
+        Sommet D = *(determine_sommet(1));
+        return(((B.x-A.x)*(C.y-A.y)-(B.y-A.y)*(C.x-A.x))*((B.x-A.x)*(D.y-A.y)-(B.y-A.y)*(D.x-A.x))<0);
     }
 };
 class Domaine {
