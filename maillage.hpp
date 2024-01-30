@@ -78,7 +78,10 @@ public:
         Sommet B = *(autre.determine_sommet(1));
         Sommet C = *(determine_sommet(0));
         Sommet D = *(determine_sommet(1));
-        return(((B.x-A.x)*(C.y-A.y)-(B.y-A.y)*(C.x-A.x))*((B.x-A.x)*(D.y-A.y)-(B.y-A.y)*(D.x-A.x))<0);
+        return(((B.x-A.x)*(C.y-A.y)-(B.y-A.y)*(C.x-A.x))*((B.x-A.x)*(D.y-A.y)-(B.y-A.y)*(D.x-A.x))<0); 
+        /* Le signe des déterminants nous indique la position relative d'un point par rapport a une arrête.
+        Si le signe du produit des deux déterminants est négatif cela signifie que les points sont de parté autre du segment.
+        Il y a donc croisement.*/
     }
 };
 class Domaine {
