@@ -59,25 +59,25 @@ public:
         Sommet* sommets_trier[3] ;
         int i_minx=0;
         for(int i=0;i<3;++i){
-            if(*(triangle->sommets[i_minx]).x>*(triangle->sommets[i]).x){
+            if( ((triangle->sommets)[i_minx])->x > ((triangle->sommets)[i])->x ){
                 i_minx=i;
             }
         }
         sommets_trier[0]=triangle->sommets[i_minx];
         int i_maxy=0;
         for(int i=0;i<3;++i){
-            if((*(triangle->sommets[i_maxy]).y<*(triangle->sommets[i]).y)&&(i!=i_minx)){
+            if(( ((triangle->sommets)[i_maxy])->y < ((triangle->sommets)[i])->y )&&(i!=i_minx)){
                 i_maxy=i;
             }
         }
         sommets_trier[1]=triangle->sommets[i_maxy];
-        return(sommets_trier[(num_sommet+num-1)%3]);
+        return(*(sommets_trier[(num_sommet+num-1)%3])) ;
     }
     float determine_longueur() {
         Sommet& sommet_1 = determine_sommet(0);
         Sommet& sommet_2 = determine_sommet(1);
-        float longueur = sqrt((sommet_1.x-sommet_2.x)^2+(sommet_1.y-sommet_2.y)^2)
-        return(longueur)
+        float longueur = sqrt((sommet_1.x-sommet_2.x)^2+(sommet_1.y-sommet_2.y)^2) ;
+        return(longueur) ;
     }
     bool operator|(const Arete& autre) const {
         Sommet A = *(autre.determine_sommet(0));
