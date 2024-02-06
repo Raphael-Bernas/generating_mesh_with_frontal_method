@@ -80,182 +80,31 @@ public:
 
 class MaillageRectangle : public Triangulation {        // Classe dérivée de la classe Triangulation
 public:
-    MaillageRectangle(double largeur, double hauteur, int nx, int ny) : Triangulation(), largeur(largeur), hauteur(hauteur), nx(nx), ny(ny) {
+    MaillageRectangle(double largeur, double hauteur, int nx, int ny) ;
     // Cas régulier : pas constants nx et ny spécifiés
-        genererMaillageRectangle(largeur, hauteur, nx, ny) ;
-    }
-    MaillageRectangle(double largeur, double hauteur, const vector<double>& abscisses, const vector<double>& ordonnees) : Triangulation(), largeur(largeur), hauteur(hauteur) {
+    MaillageRectangle(double largeur, double hauteur, const vector<double>& abscisses, const vector<double>& ordonnees) ;
     // Cas non régulier : listes d’abcisses et d’ordonnées spécifiées
-        genererMaillageRectangle(largeur, hauteur, abscisses, ordonnees) ;
-    }
 
 private:
     double largeur, hauteur ;
     int nx, ny ;
 
-    void genererMaillageRectangle(double largeur, double hauteur, int nx, int ny) {
+    void genererMaillageRectangle(double largeur, double hauteur, int nx, int ny) ;
     // Cas régulier : pas constants nx et ny spécifiés
-        double precision = 1e-14;                           // Correction des erreurs epsilon machine
-
-        double px = largeur / nx ;
-        double py = hauteur / ny ;
-
-        // Générer les sommets
-        for (int j = 0; j <= ny; ++j) {
-            for (int i = 0; i <= nx; ++i) {
-                double x = i * px ; 
-                double y = j * py ;
-                x = round(x / precision) * precision ;      // Correction des erreurs epsilon machine
-                y = round(y / precision) * precision ;
-                sommets.push_back(new Sommet(x, y)) ;
-            }
-        }
-
-        // Générer les triangles
-        for (int j = 0; j < ny; ++j) {
-            for (int i = 0; i < nx; ++i) {
-                int index1 = i + j * (nx + 1) ;
-                int index2 = index1 + 1 ;
-                int index3 = index1 + nx + 1 ;
-                int index4 = index3 + 1 ;
-                if (rand() % 2 == 0) {      // Coupage aléatoire des rectangles élémentaires
-                    triangles.push_back(new Triangle(sommets[index1], sommets[index3], sommets[index2])) ;
-                    aretes.push_back(new Arete(triangles.back(), 1)) ;      // Génération des aretes
-                    aretes.push_back(new Arete(triangles.back(), 2)) ;
-                    aretes.push_back(new Arete(triangles.back(), 3)) ;
-                    triangles.push_back(new Triangle(sommets[index2], sommets[index3], sommets[index4])) ;
-                    aretes.push_back(new Arete(triangles.back(), 1)) ;
-                    aretes.push_back(new Arete(triangles.back(), 2)) ;
-                    aretes.push_back(new Arete(triangles.back(), 3)) ;
-                }
-                else {
-                    triangles.push_back(new Triangle(sommets[index1], sommets[index2], sommets[index4])) ;
-                    aretes.push_back(new Arete(triangles.back(), 1)) ;
-                    aretes.push_back(new Arete(triangles.back(), 2)) ;
-                    aretes.push_back(new Arete(triangles.back(), 3)) ;
-                    triangles.push_back(new Triangle(sommets[index3], sommets[index1], sommets[index4])) ;
-                    aretes.push_back(new Arete(triangles.back(), 1)) ;
-                    aretes.push_back(new Arete(triangles.back(), 2)) ;
-                    aretes.push_back(new Arete(triangles.back(), 3)) ;
-                }
-            }
-        }
-    }
-    void genererMaillageRectangle(double largeur, double hauteur, const vector<double>& abscisses, const vector<double>& ordonnees) {
+    void genererMaillageRectangle(double largeur, double hauteur, const vector<double>& abscisses, const vector<double>& ordonnees) ;
     // Cas non régulier : listes d’abcisses et d’ordonnées spécifiées
-        // Message d'erreur si malformatage des listes
-        if (abscisses.size() < 2 || ordonnees.size() < 2) {
-            cerr <<"Erreur : Les listes d'abcisses et d'ordonnées doivent contenir au moins deux valeurs chacune." <<endl ;
-            return ;
-        }
-
-        double precision = 1e-14;                           // Correction des erreurs epsilon machine
-
-        // Générer les sommets
-        for (size_t j = 0; j < ordonnees.size(); ++j) {
-            for (size_t i = 0; i < abscisses.size(); ++i) {
-                double x = abscisses[i] ;
-                double y = ordonnees[j] ;
-                x = round(x / precision) * precision ;      // Correction des erreurs epsilon machine
-                y = round(y / precision) * precision ;
-                sommets.push_back(new Sommet(x, y)) ;
-            }
-        }
-
-        // Générer les triangles
-        for (size_t j = 0; j < ordonnees.size() - 1; ++j) {
-            for (size_t i = 0; i < abscisses.size() - 1; ++i) {
-                int index1 = i + j * abscisses.size() ;
-                int index2 = index1 + 1 ;
-                int index3 = index1 + abscisses.size() ;
-                int index4 = index3 + 1 ;
-                if (rand() % 2 == 0) {      // Coupage aléatoire des rectangles élémentaires
-                    triangles.push_back(new Triangle(sommets[index1], sommets[index3], sommets[index2])) ;
-                    aretes.push_back(new Arete(triangles.back(), 1)) ;      // Génération des aretes
-                    aretes.push_back(new Arete(triangles.back(), 2)) ;
-                    aretes.push_back(new Arete(triangles.back(), 3)) ;
-                    triangles.push_back(new Triangle(sommets[index2], sommets[index3], sommets[index4])) ;
-                    aretes.push_back(new Arete(triangles.back(), 1)) ;
-                    aretes.push_back(new Arete(triangles.back(), 2)) ;
-                    aretes.push_back(new Arete(triangles.back(), 3)) ;
-                }
-                else {
-                    triangles.push_back(new Triangle(sommets[index1], sommets[index2], sommets[index4])) ;
-                    aretes.push_back(new Arete(triangles.back(), 1)) ;
-                    aretes.push_back(new Arete(triangles.back(), 2)) ;
-                    aretes.push_back(new Arete(triangles.back(), 3)) ;
-                    triangles.push_back(new Triangle(sommets[index3], sommets[index1], sommets[index4])) ;
-                    aretes.push_back(new Arete(triangles.back(), 1)) ;
-                    aretes.push_back(new Arete(triangles.back(), 2)) ;
-                    aretes.push_back(new Arete(triangles.back(), 3)) ;
-                }
-            }
-        }
-    }
 };
 
 class MaillageSecteurAngulaire : public Triangulation { // Classe dérivée de la classe Triangulation
 public:
-    MaillageSecteurAngulaire(double rayon, double angle, int N) : Triangulation(), rayon(rayon), angle(angle), N(N) {
-        genererSecteurAngulaire() ;
-    }
+    MaillageSecteurAngulaire(double rayon, double angle, int N) ;   // Constructeur
 
 private:
     double rayon, angle ;
     int N ;
 
-    void generersecteurangleaigu() {
-        double precision = 1e-14;                           // Correction des erreurs epsilon machine
-        
-        // Générer les sommets
-        Sommet* centre = new Sommet(0.0, 0.0) ;             // Génération du point central
-        sommets.push_back(centre) ;
-        for (int i = 1; i < N; ++i) {                       // Génération par arc
-            // Arcs indicés par i (le point central n'est pas un arc ici)
-            double rayoninterieur = i * rayon / (N - 1) ;
-            double theta = angle / i ;
-            for (int j = 0; j <= i; ++j) {                  // Il y a i+1 points dans le i-ème arc
-                double x = rayoninterieur * cos(j * theta) ;
-                double y = rayoninterieur * sin(j * theta) ;
-                x = round(x / precision) * precision ;      // Correction des erreurs epsilon machine
-                y = round(y / precision) * precision ;
-                sommets.push_back(new Sommet(x, y)) ;
-            }
-        }
-
-        // Générer les triangles
-        for (int i = 1; i < N; ++i) {
-            // Nouvelle indiciation des arcs : le point central est un arc indicé 1
-            for (int j = 0; j < i; ++j) {                   // Il y a donc i points dans le i-ème arc
-            int index1 = i * (i - 1) / 2 + j ;
-            int index2 = (i + 1) * i / 2 + j ;
-            int index3 = (i + 1) * i / 2 + j + 1 ;
-            triangles.push_back(new Triangle(sommets[index1], sommets[index2], sommets[index3])) ;
-            }
-        }
-    }
-    void genererSecteurAngulaire() {
-        angle = (angle == 2 * M_PI) ? angle : fmod(angle + 2 * M_PI, 2 * M_PI) ; // Normalisation de angle
-
-        if (angle <= M_PI / 2){
-            generersecteurangleaigu() ;
-        }
-        else {
-            // k = nombre de sous-maillages du découpage
-            int k = (angle == 2 * M_PI) ? 4  :(angle == M_PI) ? 2  : floor(angle * 2 / M_PI) + 1 ;
-            // Découpage en k maillages identiques d'angle aigu
-            double anglek = angle / k ;
-            MaillageSecteurAngulaire maillage(rayon, anglek, floor(N/k)+1) ;
-            for (int i = 1; i<k; ++i) {
-                MaillageSecteurAngulaire maillagei(rayon, anglek, floor(N/k)+1) ;
-                maillagei.rotation(i * anglek) ;
-                maillage.fusionnerMaillages(maillagei) ;
-            }
-            fusionnerMaillages(maillage) ;         // Assignation au maillage courant
-        }
-    }
+    void generersecteurangleaigu() ;
 };
 
-
-
+//====================================================================================================
 #endif  //maillage_HPP_INCLUDED
