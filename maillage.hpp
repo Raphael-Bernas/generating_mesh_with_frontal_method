@@ -55,7 +55,7 @@ public:
     bool operator==(const Arete& autre) const {     // Surcharge de l'opérateur ==
         return (triangle == autre.triangle) && (num == autre.num) ;
     }
-    Sommet& determine_sommet(int num_sommet) {
+    Sommet& determine_sommet(int num_sommet) const {
         Sommet* sommets_trier[3] ;
         int i_minx=0;
         for(int i=0;i<3;++i){
@@ -73,17 +73,17 @@ public:
         sommets_trier[1]=triangle->sommets[i_maxy];
         return(*(sommets_trier[(num_sommet+num-1)%3])) ;
     }
-    float determine_longueur() {
+    float determine_longueur() const {
         Sommet& sommet_1 = determine_sommet(0);
         Sommet& sommet_2 = determine_sommet(1);
-        float longueur = sqrt( (sommet_1.x - sommet_2.x)^2 + (sommet_1.y - sommet_2.y)^2 ) ;
+        float longueur = sqrt((sommet_1.x - sommet_2.x)*(sommet_1.x - sommet_2.x) + (sommet_1.y - sommet_2.y)*(sommet_1.y - sommet_2.y)) ;
         return(longueur) ;
     }
     bool operator|(const Arete& autre) const {
-        Sommet A = *(autre.determine_sommet(0));
-        Sommet B = *(autre.determine_sommet(1));
-        Sommet C = *(determine_sommet(0));
-        Sommet D = *(determine_sommet(1));
+        Sommet A = autre.determine_sommet(0) ;
+        Sommet B = autre.determine_sommet(1) ;
+        Sommet C = determine_sommet(0) ;
+        Sommet D = determine_sommet(1) ;
         return(((B.x-A.x)*(C.y-A.y)-(B.y-A.y)*(C.x-A.x))*((B.x-A.x)*(D.y-A.y)-(B.y-A.y)*(D.x-A.x))<0); 
         /* Le signe des déterminants nous indique la position relative d'un point par rapport a une arrête.
         Si le signe du produit des deux déterminants est négatif cela signifie que les points sont de parté autre du segment.
@@ -459,4 +459,4 @@ private:
 
 
 
-#endif // maillage_HPP_INCLUDED
+#endif  //maillage_HPP_INCLUDED
