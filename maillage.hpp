@@ -66,12 +66,15 @@ public:
         sommets_trier[0]=triangle->sommets[i_minx];
         int i_maxy=0;
         for(int i=0;i<3;++i){
-            if((*(triangle->sommets[i_miny]).y<*(triangle->sommets[i]).y)&&(i!=i_minx)){
+            if((*(triangle->sommets[i_maxy]).y<*(triangle->sommets[i]).y)&&(i!=i_minx)){
                 i_maxy=i;
             }
         }
         sommets_trier[1]=triangle->sommets[i_maxy];
         return(sommets_trier[(num_sommet+num-1)%3]);
+    }
+    float determine_longueur() {
+
     }
     bool operator|(const Arete& autre) const {
         Sommet A = *(autre.determine_sommet(0));
