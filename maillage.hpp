@@ -97,13 +97,13 @@ private:
 
 class MaillageSecteurAngulaire : public Triangulation { // Classe dérivée de la classe Triangulation
 public:
-    MaillageSecteurAngulaire(double rayon, double angle, int N) ;   // Constructeur
-
-private:
     double rayon, angle ;
     int N ;
 
+    MaillageSecteurAngulaire(double rayon, double angle, int N) ;   // Constructeur
+
     void generersecteurangleaigu() ;
+    void genererSecteurAngulaire() ;
 };
 
 //====================================================================================================
