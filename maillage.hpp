@@ -76,7 +76,7 @@ public:
     float determine_longueur() {
         Sommet& sommet_1 = determine_sommet(0);
         Sommet& sommet_2 = determine_sommet(1);
-        float longueur = sqrt((sommet_1.x-sommet_2.x)^2+(sommet_1.y-sommet_2.y)^2) ;
+        float longueur = sqrt( (sommet_1.x - sommet_2.x)^2 + (sommet_1.y - sommet_2.y)^2 ) ;
         return(longueur) ;
     }
     bool operator|(const Arete& autre) const {
