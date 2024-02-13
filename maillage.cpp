@@ -38,6 +38,10 @@ bool Triangle::operator==(const Triangle& autre) const {  // Surcharge de l'opé
     }
     return true ;
 }
+bool in_triangle(const Sommet& point) const { // vérifie si un point est dans un triangle
+
+}
+bool in_circle_triangle(const Sommet& point) const ; // vérifie si un point est dans un triangle
 
 //====================================================================================================
 bool Arete::operator==(const Arete& autre) const {      // Surcharge de l'opérateur ==
