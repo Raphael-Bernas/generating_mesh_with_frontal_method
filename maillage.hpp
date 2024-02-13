@@ -1,6 +1,7 @@
 #ifndef maillage_HPP_INCLUDED
 #define maillage_HPP_INCLUDED
 
+#include <map>
 #include <iostream>     // Entrée/sortie standard
 #include <string>       // Type "string"
 #include <vector>       // Conteneur "vector" (stockage dynamique)
