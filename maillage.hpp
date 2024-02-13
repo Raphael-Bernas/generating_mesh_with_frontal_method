@@ -48,7 +48,7 @@ public:
         /* Le signe des déterminants nous indique la position relative d'un point par rapport a une arrête.
         Si le signe du produit des deux déterminants est négatif cela signifie que les points sont de parté autre du segment.
         Il y a donc croisement.*/
-    bool operator<(const Arete& autre) const; // Opérateur de comparaison pour trier les arêtes par taille
+    bool operator<(const Arete& autre) const;           // Opérateur de comparaison pour trier les arêtes par taille
 };
 class Domaine {
 public:
@@ -115,62 +115,13 @@ public:
         genererSecteurAngulaire() ;
     }
 
-private:
     double rayon, angle ;
     int N ;
 
     MaillageSecteurAngulaire(double rayon, double angle, int N) ;   // Constructeur
 
-    void generersecteurangleaigu() {
-        double precision = 1e-14;                           // Correction des erreurs epsilon machine
-        
-        // Générer les sommets
-        Sommet* centre = new Sommet(0.0, 0.0) ;             // Génération du point central
-        sommets.push_back(centre) ;
-        for (int i = 1; i < N; ++i) {                       // Génération par arc
-            // Arcs indicés par i (le point central n'est pas un arc ici)
-            double rayoninterieur = i * rayon / (N - 1) ;
-            double theta = angle / i ;
-            for (int j = 0; j <= i; ++j) {                  // Il y a i+1 points dans le i-ème arc
-                double x = rayoninterieur * cos(j * theta) ;
-                double y = rayoninterieur * sin(j * theta) ;
-                x = round(x / precision) * precision ;      // Correction des erreurs epsilon machine
-                y = round(y / precision) * precision ;
-                sommets.push_back(new Sommet(x, y)) ;
-            }
-        }
-
-        // Générer les triangles
-        for (int i = 1; i < N; ++i) {
-            // Nouvelle indiciation des arcs : le point central est un arc indicé 1
-            for (int j = 0; j < i; ++j) {                   // Il y a donc i points dans le i-ème arc
-            int index1 = i * (i - 1) / 2 + j ;
-            int index2 = (i + 1) * i / 2 + j ;
-            int index3 = (i + 1) * i / 2 + j + 1 ;
-            triangles.push_back(new Triangle(sommets[index1], sommets[index2], sommets[index3])) ;
-            }
-        }
-    }
-    void genererSecteurAngulaire() {
-        angle = (angle == 2 * M_PI) ? angle : fmod(angle + 2 * M_PI, 2 * M_PI) ; // Normalisation de angle
-
-        if (angle <= M_PI / 2){
-            generersecteurangleaigu() ;
-        }
-        else {
-            // k = nombre de sous-maillages du découpage
-            int k = (angle == 2 * M_PI) ? 4  :(angle == M_PI) ? 2  : floor(angle * 2 / M_PI) + 1 ;
-            // Découpage en k maillages identiques d'angle aigu
-            double anglek = angle / k ;
-            MaillageSecteurAngulaire maillage(rayon, anglek, floor(N/k)+1) ;
-            for (int i = 1; i<k; ++i) {
-                MaillageSecteurAngulaire maillagei(rayon, anglek, floor(N/k)+1) ;
-                maillagei.rotation(i * anglek) ;
-                maillage.fusionnerMaillages(maillagei) ;
-            }
-            fusionnerMaillages(maillage) ;         // Assignation au maillage courant
-        }
-    }
+    void generersecteurangleaigu() ;
+    void genererSecteurAngulaire() ;
 };
 
 //====================================================================================================
