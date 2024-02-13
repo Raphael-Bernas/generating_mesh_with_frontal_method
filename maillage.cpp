@@ -418,8 +418,15 @@ void Front::ajouterArete(const Arete* parete) {  // Ajouter une arête au front
             aretes[parete->determine_longueur()] = list<const Arete*>{parete};
     }
 }
-void Front::supprimerArete(int id) {            // Supprime une arête du front
-    aretes.erase(aretes.find(id));
+// Supprime une arête de la liste associée à sa taille
+void supprimerArete(const Arete* arete) {
+    // Recherche de la liste correspondant à la taille de l'arête
+    auto it = aretes.find(arete->determine_longueur());
+
+    // Si une liste pour cette taille existe, recherche et supprime l'arête
+    if (it != aretes.end()) {
+        it->second.remove(arete);
+    }
 }
 void Front::ajouterPoint(const Sommet& point) {         // Ajoute un point à la liste des points
     points.push_back(point);
