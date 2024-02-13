@@ -411,6 +411,6 @@ void Front::ajouterArete(const Arete& arete) {  // Ajoute une arête au front
 void Front::supprimerArete(int id) {            // Supprime une arête du front
     arretes.erase(aretes.find(id));
 }
-void Front::ajouterPoint(const Point& point) {         // Ajoute un point à la liste des points
+void Front::ajouterPoint(const Sommet& point) {         // Ajoute un point à la liste des points
     points.push_back(point);
 }

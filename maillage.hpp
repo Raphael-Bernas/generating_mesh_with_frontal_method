@@ -136,7 +136,7 @@ public:
 
     void ajouterArete(const Arete& arete) ; // Ajoute une arête au front
     void supprimerArete(int id) ;           // Supprime une arête du front
-    void ajouterPoint(const Point& point) ; // Ajoute un point à la liste des points
+    void ajouterPoint(const Sommet& point) ;// Ajoute un point à la liste des points
 
     // Méthode pour générer un nouveau triangle
     // (vous devrez implémenter cette méthode en fonction de votre logique de maillage)
