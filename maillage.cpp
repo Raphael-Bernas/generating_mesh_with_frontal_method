@@ -405,9 +405,17 @@ void MaillageSecteurAngulaire::genererSecteurAngulaire() {
 //                              Méthode Frontale et ses dérivées
 //====================================================================================================
 
-void Front::ajouterArete(const Arete& arete) {  // Ajoute une arête au front
-    aretes[arete.determine_longueur()] = arete;
-}
+void Front::ajouterArete(const Arete* parete) {  // Ajouter une arête au front
+    // Rechercher de la liste correspondant à la taille de l'arête
+        auto it = aretes.find(parete->determine_longueur());
+
+        // Si une liste pour cette taille existe déjà, ajouter le pointeur vers l'arête à cette liste
+        if (it != arretes.end()) {
+            it->second.push_back(parete);
+        } else { // Sinon, crée une nouvelle liste contenant uniquement ce pointeur vers l'arête
+            arretes[parete->determine_longueur()] = list<Arrete*>{parete};
+        }
+    }
 void Front::supprimerArete(int id) {            // Supprime une arête du front
     aretes.erase(aretes.find(id));
 }
