@@ -32,12 +32,10 @@ public:
     Sommet* sommets[3] ;
 
     Triangle(Sommet* s1, Sommet* s2, Sommet* s3) ;  // Constructeur
-    
-    bool operator==(const Triangle& autre) const ;  // Surcharge de l'opérateur ==
 
-    bool in_triangle(const Sommet& point) const ; // vérifie si un point est dans un triangle
-    
-    bool in_circle_triangle(const Sommet& point) const ; // vérifie si un point est dans un triangle
+    bool operator==(const Triangle& autre) const ;          // Surcharge de l'opérateur ==
+    bool in_triangle(const Sommet& point) const ;           // Vérifie si un point est dans un triangle
+    bool in_circle_triangle(const Sommet& point) const ;    // Vérifie si un point est dans un triangle
 };
 class Arete {
 public:
@@ -140,7 +138,7 @@ public:
     vector<Sommet> points;              // Liste des points utilisables pour générer des triangles
 
     void ajouterArete(const Arete* parete) ; // Ajoute une arête au front
-    void supprimerArete(int id) ;           // Supprime une arête du front
+    void supprimerArete(const Arete* arete) ;           // Supprime une arête du front
     void ajouterPoint(const Sommet& point) ;// Ajoute un point à la liste des points
 
     // Méthode pour générer un nouveau triangle
