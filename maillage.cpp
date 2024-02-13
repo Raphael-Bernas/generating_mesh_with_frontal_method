@@ -243,14 +243,6 @@ void Triangulation::symetrieAxeOblique(double x0, double y0, double angle) {
 }
 
 //====================================================================================================
-MaillageRectangle::MaillageRectangle(double largeur, double hauteur, int nx, int ny) : Triangulation(), largeur(largeur), hauteur(hauteur), nx(nx), ny(ny) {
-// Cas régulier : pas constants nx et ny spécifiés
-    genererMaillageRectangle(largeur, hauteur, nx, ny) ;
-}
-MaillageRectangle::MaillageRectangle(double largeur, double hauteur, const vector<double>& abscisses, const vector<double>& ordonnees) : Triangulation(), largeur(largeur), hauteur(hauteur) {
-// Cas non régulier : listes d’abcisses et d’ordonnées spécifiées
-    genererMaillageRectangle(largeur, hauteur, abscisses, ordonnees) ;
-}
 void MaillageRectangle::genererMaillageRectangle(double largeur, double hauteur, int nx, int ny) {
     // Cas régulier : pas constants nx et ny spécifiés
     double precision = 1e-14; // Correction des erreurs epsilon machine
