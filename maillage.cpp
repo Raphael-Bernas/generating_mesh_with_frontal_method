@@ -1,5 +1,7 @@
 #include "maillage.hpp"
 
+#include <list>         // Utilisation de list
+#include <map>          // Utilisation de map
 #include <iostream>     // Entrée/sortie standard
 #include <string>       // Type "string"
 #include <vector>       // Conteneur "vector" (stockage dynamique)
@@ -407,15 +409,15 @@ void MaillageSecteurAngulaire::genererSecteurAngulaire() {
 
 void Front::ajouterArete(const Arete* parete) {  // Ajouter une arête au front
     // Rechercher de la liste correspondant à la taille de l'arête
-        auto it = aretes.find(parete->determine_longueur());
+    auto it = aretes.find(parete->determine_longueur());
 
-        // Si une liste pour cette taille existe déjà, ajouter le pointeur vers l'arête à cette liste
-        if (it != arretes.end()) {
-            it->second.push_back(parete);
-        } else { // Sinon, crée une nouvelle liste contenant uniquement ce pointeur vers l'arête
-            arretes[parete->determine_longueur()] = list<Arrete*>{parete};
-        }
+    // Si une liste pour cette taille existe déjà, ajouter le pointeur vers l'arête à cette liste
+    if (it != aretes.end()) {
+        it->second.push_back(parete);
+    } else { // Sinon, crée une nouvelle liste contenant uniquement ce pointeur vers l'arête
+            aretes[parete->determine_longueur()] = list<const Arete*>{parete};
     }
+}
 void Front::supprimerArete(int id) {            // Supprime une arête du front
     aretes.erase(aretes.find(id));
 }

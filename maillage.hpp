@@ -1,7 +1,8 @@
 #ifndef maillage_HPP_INCLUDED
 #define maillage_HPP_INCLUDED
 
-#include <map>
+#include <list>         // Utilisation de list
+#include <map>          // Utilisation de map
 #include <iostream>     // Entrée/sortie standard
 #include <string>       // Type "string"
 #include <vector>       // Conteneur "vector" (stockage dynamique)
@@ -131,7 +132,7 @@ public:
 
 class Front {
 public:
-    map<double, list<Arete*>> aretes;         // Liste de liste d'arêtes triées par taille
+    map<double, list<const Arete*>> aretes;         // Liste de liste d'arêtes triées par taille
     vector<Sommet> points;              // Liste des points utilisables pour générer des triangles
 
     void ajouterArete(const Arete* parete) ; // Ajoute une arête au front
