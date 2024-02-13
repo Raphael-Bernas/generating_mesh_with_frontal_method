@@ -42,7 +42,7 @@ bool Triangle::in_triangle(const Sommet& point) const { // vérifie si un point 
     Sommet A = *sommets[0];
     Sommet B = *sommets[1];
     Sommet C = *sommets[2];
-// Vérifier si le point est du même côté de chaque côté du triangle
+// Vérifier si le point est du même côté de chaque côté du triangle.
     double dotAB = (B.x - A.x) * (point.y - A.y) - (B.y - A.y) * (point.x - A.x);
     double dotBC = (C.x - B.x) * (point.y - B.y) - (C.y - B.y) * (point.x - B.x);
     double dotCA = (A.x - C.x) * (point.y - C.y) - (A.y - C.y) * (point.x - C.x);
