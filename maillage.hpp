@@ -20,75 +20,31 @@ class Sommet {
 public:
     double x, y ;
     
-    Sommet(double a, double b) : x(a), y(b) {}
+    Sommet(double a, double b) : x(a), y(b) {}      // Constructeur
+    bool operator==(const Sommet& autre) const ;    // Surcharge de l'opérateur ==
 
-    bool operator==(const Sommet& autre) const {    // Surcharge de l'opérateur ==
-        return (x == autre.x) && (y == autre.y) ;
-    }
 };
 class Triangle {
 public:
     Sommet* sommets[3] ;
 
-    Triangle(Sommet* s1, Sommet* s2, Sommet* s3) {
-        sommets[0] = s1 ;
-        sommets[1] = s2 ;
-        sommets[2] = s3 ;
-    }
-
-    bool operator==(const Triangle& autre) const {  // Surcharge de l'opérateur ==
-        for (int i = 0; i < 3; ++i) {
-            if (!(*sommets[i] == *autre.sommets[i])) {
-                return false ;
-            }
-        }
-        return true ;
-    }
+    Triangle(Sommet* s1, Sommet* s2, Sommet* s3) ;  // Constructeur
+    bool operator==(const Triangle& autre) const ;  // Surcharge de l'opérateur ==
 };
 class Arete {
 public:
     Triangle* triangle ;
     int num ;
 
-    Arete(Triangle* T, int n) : triangle(T), num(n) {}
+    Arete(Triangle* T, int n) : triangle(T), num(n) {}  // Constructeur
 
-    bool operator==(const Arete& autre) const {     // Surcharge de l'opérateur ==
-        return (triangle == autre.triangle) && (num == autre.num) ;
-    }
-    Sommet& determine_sommet(int num_sommet) const {
-        Sommet* sommets_trier[3] ;
-        int i_minx=0;
-        for(int i=0;i<3;++i){
-            if( ((triangle->sommets)[i_minx])->x > ((triangle->sommets)[i])->x ){
-                i_minx=i;
-            }
-        }
-        sommets_trier[0]=triangle->sommets[i_minx];
-        int i_maxy=0;
-        for(int i=0;i<3;++i){
-            if(( ((triangle->sommets)[i_maxy])->y < ((triangle->sommets)[i])->y )&&(i!=i_minx)){
-                i_maxy=i;
-            }
-        }
-        sommets_trier[1]=triangle->sommets[i_maxy];
-        return(*(sommets_trier[(num_sommet+num-1)%3])) ;
-    }
-    float determine_longueur() const {
-        Sommet& sommet_1 = determine_sommet(0);
-        Sommet& sommet_2 = determine_sommet(1);
-        float longueur = sqrt((sommet_1.x - sommet_2.x)*(sommet_1.x - sommet_2.x) + (sommet_1.y - sommet_2.y)*(sommet_1.y - sommet_2.y)) ;
-        return(longueur) ;
-    }
-    bool operator|(const Arete& autre) const {
-        Sommet A = autre.determine_sommet(0) ;
-        Sommet B = autre.determine_sommet(1) ;
-        Sommet C = determine_sommet(0) ;
-        Sommet D = determine_sommet(1) ;
-        return(((B.x-A.x)*(C.y-A.y)-(B.y-A.y)*(C.x-A.x))*((B.x-A.x)*(D.y-A.y)-(B.y-A.y)*(D.x-A.x))<0); 
+    bool operator==(const Arete& autre) const ;         // Surcharge de l'opérateur ==
+    Sommet& determine_sommet(int num_sommet) const ;    // Renvoie le (num_sommet)-ième sommet de l'arrête
+    float determine_longueur() const ;                  // Renvoie la longueur de l'arete
+    bool operator|(const Arete& autre) const ;
         /* Le signe des déterminants nous indique la position relative d'un point par rapport a une arrête.
         Si le signe du produit des deux déterminants est négatif cela signifie que les points sont de parté autre du segment.
         Il y a donc croisement.*/
-    }
 };
 class Domaine {
 public:
