@@ -124,29 +124,19 @@ public:
     void genererSecteurAngulaire() ;
 };
 
+
 //====================================================================================================
 //                              Méthode Frontale et ses dérivées
 //====================================================================================================
+
 class Front {
-private:
-    std::map<double, Arete> aretes; // Liste d'arêtes triées par taille
-    std::vector<Point> points; // Liste des points utilisables pour générer des triangles
-
 public:
-    // Ajoute une arête au front
-    void ajouterArete(const Arete& arete) {
-        arretes[arete.taille] = arete;
-    }
+    map<double, Arete> aretes;         // Liste d'arêtes triées par taille
+    vector<Sommet> points;              // Liste des points utilisables pour générer des triangles
 
-    // Supprime une arête du front
-    void supprimerArete(int id) {
-        arretes.erase(aretes.find(id));
-    }
-
-    // Ajoute un point à la liste des points
-    void ajouterPoint(const Point& point) {
-        points.push_back(point);
-    }
+    void ajouterArete(const Arete& arete) ; // Ajoute une arête au front
+    void supprimerArete(int id) ;           // Supprime une arête du front
+    void ajouterPoint(const Point& point) ; // Ajoute un point à la liste des points
 
     // Méthode pour générer un nouveau triangle
     // (vous devrez implémenter cette méthode en fonction de votre logique de maillage)

@@ -400,5 +400,17 @@ void MaillageSecteurAngulaire::genererSecteurAngulaire() {
     }
 }
 
+
 //====================================================================================================
+//                              Méthode Frontale et ses dérivées
 //====================================================================================================
+
+void Front::ajouterArete(const Arete& arete) {  // Ajoute une arête au front
+    arretes[arete.taille] = arete;
+}
+void Front::supprimerArete(int id) {            // Supprime une arête du front
+    arretes.erase(aretes.find(id));
+}
+void Front::ajouterPoint(const Point& point) {         // Ajoute un point à la liste des points
+    points.push_back(point);
+}
