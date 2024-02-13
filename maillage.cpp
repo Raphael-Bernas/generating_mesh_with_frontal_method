@@ -419,7 +419,7 @@ void Front::ajouterArete(const Arete* parete) {  // Ajouter une arête au front
     }
 }
 // Supprime une arête de la liste associée à sa taille
-void supprimerArete(const Arete* arete) {
+void Front::supprimerArete(const Arete* arete) {
     // Recherche de la liste correspondant à la taille de l'arête
     auto it = aretes.find(arete->determine_longueur());
 
