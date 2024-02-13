@@ -75,6 +75,11 @@ bool Arete::operator|(const Arete& autre) const {
     Si le signe du produit des deux déterminants est négatif cela signifie que les points sont de parté autre du segment.
     Il y a donc croisement.*/
 }
+bool Arete::operator<(const Arete& autre) const { // Opérateur de comparaison pour trier les arêtes par taille.
+    double taille = this->determine_longueur();
+    double autre_taille = autre.determine_longueur();
+    return taille < autre_taille;
+}
 
 //====================================================================================================
 bool Domaine::operator==(const Domaine& autre) const {       // Surcharge de l'opérateur ==
