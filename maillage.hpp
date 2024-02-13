@@ -48,6 +48,7 @@ public:
         /* Le signe des déterminants nous indique la position relative d'un point par rapport a une arrête.
         Si le signe du produit des deux déterminants est négatif cela signifie que les points sont de parté autre du segment.
         Il y a donc croisement.*/
+    bool operator<(const Arete& autre) const; // Opérateur de comparaison pour trier les arêtes par taille
 };
 class Domaine {
 public:
