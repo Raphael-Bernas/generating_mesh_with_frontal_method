@@ -47,7 +47,7 @@ bool Triangle::in_triangle(const Sommet& point) const { // vérifie si un point 
     double dotBC = (C.x - B.x) * (point.y - B.y) - (C.y - B.y) * (point.x - B.x);
     double dotCA = (A.x - C.x) * (point.y - C.y) - (A.y - C.y) * (point.x - C.x);
 
-    return (dotAB > 0 && dotBC > 0 && dotCA > 0) || (dotAB < 0 && dotBC < 0 && dotCA < 0);
+    return (dotAB >= 0 && dotBC >= 0 && dotCA >= 0) || (dotAB <= 0 && dotBC <= 0 && dotCA <= 0);
 }
 bool Triangle::in_circle_triangle(const Sommet& point) const { // vérifie si un point est dans un triangle
 }
