@@ -49,9 +49,8 @@ bool Triangle::in_triangle(const Sommet& point) const { // vérifie si un point 
 
     return (dotAB > 0 && dotBC > 0 && dotCA > 0) || (dotAB < 0 && dotBC < 0 && dotCA < 0);
 }
-
-bool Triangle::in_circle_triangle(const Sommet& point) const ; // vérifie si un point est dans un triangle
-
+bool Triangle::in_circle_triangle(const Sommet& point) const { // vérifie si un point est dans un triangle
+}
 //====================================================================================================
 bool Arete::operator==(const Arete& autre) const {      // Surcharge de l'opérateur ==
     return (triangle == autre.triangle) && (num == autre.num) ;
