@@ -34,6 +34,10 @@ public:
     Triangle(Sommet* s1, Sommet* s2, Sommet* s3) ;  // Constructeur
     
     bool operator==(const Triangle& autre) const ;  // Surcharge de l'opérateur ==
+
+    bool in_triangle(const Sommet& point) const ; // vérifie si un point est dans un triangle
+    
+    bool in_circle_triangle(const Sommet& point) const ; // vérifie si un point est dans un triangle
 };
 class Arete {
 public:
@@ -132,12 +136,12 @@ public:
 
 class Front {
 public:
-    map<double, list<const Arete*>> aretes;     // Liste de liste d'arêtes triées par taille
-    vector<Sommet> points;                      // Liste des points utilisables pour générer des triangles
+    map<double, list<const Arete*>> aretes;         // Liste de liste d'arêtes triées par taille
+    vector<Sommet> points;              // Liste des points utilisables pour générer des triangles
 
-    void ajouterArete(const Arete* parete) ;    // Ajoute une arête au front
-    void supprimerArete(const Arete* arete) ;               // Supprime une arête du front
-    void ajouterPoint(const Sommet& point) ;    // Ajoute un point à la liste des points
+    void ajouterArete(const Arete* parete) ; // Ajoute une arête au front
+    void supprimerArete(int id) ;           // Supprime une arête du front
+    void ajouterPoint(const Sommet& point) ;// Ajoute un point à la liste des points
 
     // Méthode pour générer un nouveau triangle
     // (vous devrez implémenter cette méthode en fonction de votre logique de maillage)
