@@ -53,6 +53,15 @@ public:
         Il y a donc croisement.*/
     bool operator<(const Arete& autre) const;           // Opérateur de comparaison pour trier les arêtes par taille
 };
+class Segment {
+    public:
+        Sommet* sommets[2]
+    
+    Segment(Sommet& s1, Sommet& s2);
+    float longueur() const;
+    bool operator|(const Segment& autre) const ;
+    bool operator<(const Segment& autre) const;
+}
 class Domaine {
 public:
     int dim ;
