@@ -98,7 +98,7 @@ Segment::Segment(Sommet* s1, Sommet* s2){ // Constructeur du segment
     sommets[1] = s2 ;
 }
 float Segment::longueur() const{
-    return(sqrt((sommets[1]->y - sommets[0]->y)^2 + (sommets[1]->x - sommets[0]->x)^2))
+    return(sqrt((sommets[1]->y - sommets[0]->y)*(sommets[1]->y - sommets[0]->y) + (sommets[1]->x - sommets[0]->x)*(sommets[1]->x - sommets[0]->x)));
 }
 bool Segment::operator|(const Segment& autre) const {
     Sommet* A = autre.sommets[0] ;
@@ -452,7 +452,7 @@ void Front::supprimerSegment(const Segment* segment) {    // Supprime une arête
     auto it = segments.find(segment->longueur());
 
     // Si une liste po<ur cette taille existe, recherche et supprime l'arête
-    if (it != segment.end()) {
+    if (it != segments.end()) {
         it->second.remove(segment);
     }
 }
