@@ -98,14 +98,14 @@ Segment::Segment(Sommet* s1, Sommet* s2){ // Constructeur du segment
     sommets[1] = s2 ;
 }
 float Segment::longueur() const{
-    return(sqrt((sommets[1].y-sommets[0].y)^2+(sommets[1].x-sommets[0].x)^2))
+    return(sqrt((sommets[1]->y - sommets[0]->y)^2 + (sommets[1]->x - sommets[0]->x)^2))
 }
 bool Segment::operator|(const Segment& autre) const {
-    Sommet A = autre.sommets[0] ;
-    Sommet B = autre.sommets[1] ;
-    Sommet C = sommets[0] ;
-    Sommet D = sommets[1] ;
-    return(((B.x-A.x)*(C.y-A.y)-(B.y-A.y)*(C.x-A.x))*((B.x-A.x)*(D.y-A.y)-(B.y-A.y)*(D.x-A.x))<0);
+    Sommet* A = autre.sommets[0] ;
+    Sommet* B = autre.sommets[1] ;
+    Sommet* C = sommets[0] ;
+    Sommet* D = sommets[1] ;
+    return(((B->x - A->x)*(C->y - A->y)-(B->y - A->y)*(C->x - A->x))*((B->x - A->x)*(D->y - A->y)-(B->y - A->y)*(D->x - A->x))<0);
 }
 bool Segment::operator<(const Segment& autre) const{
     double taille = this->longueur();

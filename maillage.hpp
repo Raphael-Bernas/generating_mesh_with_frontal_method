@@ -55,13 +55,13 @@ public:
 };
 class Segment {
     public:
-        Sommet* sommets[2]
+        Sommet* sommets[2] ;
     
-    Segment(Sommet& s1, Sommet& s2);
+    Segment(Sommet* s1, Sommet* s2);
     float longueur() const;
     bool operator|(const Segment& autre) const ;
     bool operator<(const Segment& autre) const;
-}
+};
 class Domaine {
 public:
     int dim ;
