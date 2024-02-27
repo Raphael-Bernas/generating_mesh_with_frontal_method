@@ -436,24 +436,24 @@ void MaillageSecteurAngulaire::genererSecteurAngulaire() {
 //                              Méthode Frontale et ses dérivées
 //====================================================================================================
 
-void Front::ajouterArete(const Arete* parete) {     // Ajouter une arête au front
+void Front::ajouterSegment(const Segment* psegment) {     // Ajouter une arête au front
     // Rechercher de la liste correspondant à la taille de l'arête
-    auto it = aretes.find(parete->determine_longueur());
+    auto it = segments.find(psegment->longueur());
 
     // Si une liste pour cette taille existe déjà, ajouter le pointeur vers l'arête à cette liste
-    if (it != aretes.end()) {
-        it->second.push_back(parete);
+    if (it != segments.end()) {
+        it->second.push_back(psegment);
     } else { // Sinon, crée une nouvelle liste contenant uniquement ce pointeur vers l'arête
-            aretes[parete->determine_longueur()] = list<const Arete*>{parete};
+            segments[psegment->longueur()] = list<const Segment*>{psegment};
     }
 }
-void Front::supprimerArete(const Arete* arete) {    // Supprime une arête de la liste associée à sa taille
+void Front::supprimerSegment(const Segment* segment) {    // Supprime une arête de la liste associée à sa taille
     // Recherche de la liste correspondant à la taille de l'arête
-    auto it = aretes.find(arete->determine_longueur());
+    auto it = segments.find(segment->longueur());
 
-    // Si une liste pour cette taille existe, recherche et supprime l'arête
-    if (it != aretes.end()) {
-        it->second.remove(arete);
+    // Si une liste po<ur cette taille existe, recherche et supprime l'arête
+    if (it != segment.end()) {
+        it->second.remove(segment);
     }
 }
 void Front::ajouterPoint(const Sommet& point) {     // Ajoute un point à la liste des points
