@@ -124,11 +124,6 @@ public:
 
 class MaillageSecteurAngulaire : public Triangulation { // Classe dérivée de la classe Triangulation
 public:
-    MaillageSecteurAngulaire(double rayon, double angle, int N) : Triangulation(), rayon(rayon), angle(angle), N(N) {
-    // Constructeur
-        genererSecteurAngulaire() ;
-    }
-
     double rayon, angle ;
     int N ;
 
@@ -148,7 +143,7 @@ public:
     map<double, list<const Segment*>> segments;         // Liste de liste d'arêtes triées par taille
     vector<Sommet> points;                          // Liste des points utilisables pour générer des triangles
 
-    Front(const Segment** Nsegments, ector<Sommet> Npoints); // Constructeur Front
+    Front(const Segment** Nsegments, vector<Sommet> Npoints); // Constructeur Front
     void ajouterSegment(const Segment* psegment) ;        // Ajoute une arête au front
     void supprimerSegment(const Segment* segment) ;       // Supprime une arête du front
     void ajouterPoint(const Sommet& point) ;        // Ajoute un point à la liste des points

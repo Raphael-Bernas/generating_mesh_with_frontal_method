@@ -461,10 +461,10 @@ void MaillageSecteurAngulaire::genererSecteurAngulaire() {
 //                              Méthode Frontale et ses dérivées
 //====================================================================================================
 Front::Front(const Segment** Nsegments, vector<Sommet> Npoints) {
-    for (int i = 0; i < sizeof(Nsegments); ++i) {
+    for (int i = 0; i < int(sizeof(Nsegments)); ++i) {
         ajouterSegment(Nsegments[i]);
     }
-    for (int i = 0; i < sizeof(Npoints); ++i) {
+    for (int i = 0; i < int(sizeof(Npoints)); ++i) {
         ajouterPoint(Npoints[i]);
     }
 }
