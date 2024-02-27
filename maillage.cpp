@@ -18,7 +18,6 @@ using namespace std ;   // Utiliser les classes et fonctions de la bibliothèque
 //                                      Classes élémentaires
 //====================================================================================================
 
-
 //====================================================================================================
 bool Sommet::operator==(const Sommet& autre) const {    // Surcharge de l'opérateur ==
     return (x == autre.x) && (y == autre.y) ;
@@ -419,7 +418,7 @@ void MaillageSecteurAngulaire::genererSecteurAngulaire() {
 //                              Méthode Frontale et ses dérivées
 //====================================================================================================
 
-void Front::ajouterArete(const Arete* parete) {  // Ajouter une arête au front
+void Front::ajouterArete(const Arete* parete) {     // Ajouter une arête au front
     // Rechercher de la liste correspondant à la taille de l'arête
     auto it = aretes.find(parete->determine_longueur());
 
@@ -430,8 +429,7 @@ void Front::ajouterArete(const Arete* parete) {  // Ajouter une arête au front
             aretes[parete->determine_longueur()] = list<const Arete*>{parete};
     }
 }
-// Supprime une arête de la liste associée à sa taille
-void Front::supprimerArete(const Arete* arete) {
+void Front::supprimerArete(const Arete* arete) {    // Supprime une arête de la liste associée à sa taille
     // Recherche de la liste correspondant à la taille de l'arête
     auto it = aretes.find(arete->determine_longueur());
 
@@ -440,6 +438,6 @@ void Front::supprimerArete(const Arete* arete) {
         it->second.remove(arete);
     }
 }
-void Front::ajouterPoint(const Sommet& point) {         // Ajoute un point à la liste des points
+void Front::ajouterPoint(const Sommet& point) {     // Ajoute un point à la liste des points
     points.push_back(point);
 }
