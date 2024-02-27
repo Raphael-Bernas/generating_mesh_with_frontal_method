@@ -48,8 +48,33 @@ bool Triangle::in_triangle(const Sommet& point) const { // vérifie si un point 
 
     return (dotAB >= 0 && dotBC >= 0 && dotCA >= 0) || (dotAB <= 0 && dotBC <= 0 && dotCA <= 0);
 }
-bool Triangle::in_circle_triangle(const Sommet& point) const { // vérifie si un point est dans le cercle circonscrit au triangle
+Sommet Triangle::circumcenter() const {
+    double x1 = sommets[0]->x;
+    double y1 = sommets[0]->y;
+    double x2 = sommets[1]->x;
+    double y2 = sommets[1]->y;
+    double x3 = sommets[2]->x;
+    double y3 = sommets[2]->y;
+    double D = 2 * (x1 * (y2 - y3) + x2 * (y3 - y1) + x3 * (y1 - y2));
+    double Ux = ((x1 * x1 + y1 * y1) * (y2 - y3) + (x2 * x2 + y2 * y2) * (y3 - y1) + (x3 * x3 + y3 * y3) * (y1 - y2)) / D;
+    double Uy = ((x1 * x1 + y1 * y1) * (x3 - x2) + (x2 * x2 + y2 * y2) * (x1 - x3) + (x3 * x3 + y3 * y3) * (x2 - x1)) / D;
+    return Sommet(Ux, Uy);
 }
+double Triangle::circumradius() const {
+    double x0 = circumcenter().x;
+    double y0 = circumcenter().y;
+    double x1 = sommets[0]->x;
+    double y1 = sommets[0]->y;
+    return sqrt((x0-x1)*(x0-x1)+(y0-y1)*(y0-y1));
+}
+bool Triangle::in_circle_triangle(const Sommet& point) const {
+    Sommet circumcenter_point = circumcenter();
+    double radius = circumradius();
+    // Distance entre le point et le centre du cercle circonscrit : si la distance est inférieure ou égale au rayon, le point est dans le cercle
+    double distance = sqrt((point.x - circumcenter_point.x) * (point.x - circumcenter_point.x) + (point.y - circumcenter_point.y) * (point.y - circumcenter_point.y));
+    return distance <= radius;
+}
+
 //====================================================================================================
 bool Arete::operator==(const Arete& autre) const {      // Surcharge de l'opérateur ==
     return (triangle == autre.triangle) && (num == autre.num) ;

@@ -33,9 +33,11 @@ public:
 
     Triangle(Sommet* s1, Sommet* s2, Sommet* s3) ;  // Constructeur
 
-    bool operator==(const Triangle& autre) const ;          // Surcharge de l'opérateur ==
-    bool in_triangle(const Sommet& point) const ;           // Vérifie si un point est dans un triangle
-    bool in_circle_triangle(const Sommet& point) const ;    // Vérifie si un point est dans un triangle
+    bool operator==(const Triangle& autre) const;        // Surcharge de l'opérateur ==
+    bool in_triangle(const Sommet& point) const;         // Vérifie si un point est dans un triangle
+    bool in_circle_triangle(const Sommet& point) const;  // Vérifie si un point est dans un cercle circonscrit
+    Sommet circumcenter() const;                          // Renvoie le centre du cercle circonscrit
+    double circumradius() const;                          // Renvoie la longueur du rayon du cercle circonscrit
 };
 class Arete {
 public:
