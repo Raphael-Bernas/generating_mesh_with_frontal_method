@@ -133,6 +133,10 @@ public:
     void genererSecteurAngulaire() ;
 };
 
+class MaillageFront : public Triangulation {
+
+};
+
 
 //====================================================================================================
 //                              Méthode Frontale et ses dérivées
