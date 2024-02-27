@@ -148,14 +148,13 @@ public:
     map<double, list<const Segment*>> segments;         // Liste de liste d'arêtes triées par taille
     vector<Sommet> points;                          // Liste des points utilisables pour générer des triangles
 
+    Front(const Segment** Nsegments, ector<Sommet> Npoints); // Constructeur Front
     void ajouterSegment(const Segment* psegment) ;        // Ajoute une arête au front
     void supprimerSegment(const Segment* segment) ;       // Supprime une arête du front
     void ajouterPoint(const Sommet& point) ;        // Ajoute un point à la liste des points
 
     // Méthode pour générer un nouveau triangle
-    void genererTriangle() {
-        // Logique de génération de triangle
-    }
+    void genererTriangle();
 };
 
 

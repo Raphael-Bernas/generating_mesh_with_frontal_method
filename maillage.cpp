@@ -460,7 +460,14 @@ void MaillageSecteurAngulaire::genererSecteurAngulaire() {
 //====================================================================================================
 //                              Méthode Frontale et ses dérivées
 //====================================================================================================
-
+Front::Front(const Segment** Nsegments, vector<Sommet> Npoints) {
+    for (int i = 0; i < sizeof(Nsegments); ++i) {
+        ajouterSegment(Nsegments[i]);
+    }
+    for (int i = 0; i < sizeof(Npoints); ++i) {
+        ajouterPoint(Npoints[i]);
+    }
+}
 void Front::ajouterSegment(const Segment* psegment) {     // Ajouter une arête au front
     // Rechercher de la liste correspondant à la taille de l'arête
     auto it = segments.find(psegment->longueur());
