@@ -131,7 +131,10 @@ public:
     void genererSecteurAngulaire() ;
 };
 class MaillageFront : public Triangulation {
-
+    Front* TheFront
+    MaillageFront(Front* AFront);
+    MaillageFront(char modele, float Hpas);
+    bool MethodeFrontal();
 };
 
 
