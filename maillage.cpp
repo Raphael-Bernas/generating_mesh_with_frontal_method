@@ -486,10 +486,23 @@ void Front::supprimerSegment(const Segment* segment) {    // Supprime une arête
     // Si une liste pour cette taille existe, recherche et supprime l'arête
     if (it != segments.end()) {
         it->second.remove(segment);
+        // Vérifier si la liste est devenue vide après la suppression
+        if (it->second.empty()) {
+            // Si la liste est vide, supprimer cette entrée du map
+            segments.erase(it);
+        }
     }
 }
 void Front::ajouterPoint(const Sommet& point) {     // Ajoute un point à la liste des points
     points.push_back(point);
+}
+void Front::supprimerPoint(const Sommet& point) {
+    for (auto it = points.begin(); it != points.end(); ++it) {
+        if (*it == point) {
+            points.erase(it);
+            break; // Sortir de la boucle une fois que le point est trouvé et supprimé
+        }
+    }
 }
 Triangle Front::genererTriangle() { 
     // générer le 3e sommet du triangle équilatéral
