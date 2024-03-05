@@ -483,7 +483,7 @@ void Front::supprimerSegment(const Segment* segment) {    // Supprime une arête
     // Recherche de la liste correspondant à la taille de l'arête
     auto it = segments.find(segment->longueur());
 
-    // Si une liste po<ur cette taille existe, recherche et supprime l'arête
+    // Si une liste pour cette taille existe, recherche et supprime l'arête
     if (it != segments.end()) {
         it->second.remove(segment);
     }
@@ -491,8 +491,27 @@ void Front::supprimerSegment(const Segment* segment) {    // Supprime une arête
 void Front::ajouterPoint(const Sommet& point) {     // Ajoute un point à la liste des points
     points.push_back(point);
 }
-void Front::genererTriangle(const Segment* segment) { 
+bool Front::genererTriangle() { 
     // générer le 3e sommet du triangle équilatéral
     // calcul de dis = distance du 3e point généréz au point du front le plus proche
     // si un point de elemcourant.points est à une distance de moins de 10% de la longueur du coté & 
+    
+    // Accéder à l'objet indexé par le float minimal
+    auto it = segments.begin();
+    while (it != segments.end() && it->second.empty()) {
+        ++it;
+    }
+
+    if (it != segments.end()) {
+        // Maintenant, it pointe vers la première liste non vide
+        const auto& premierElement = it->second;
+        const Segment* premierSegment = premierElement.front(); // Premier élément de la liste
+        const longueurListe = premierElement.size(); // Longueur de la liste
+        // Utilisez premierSegment et longueurListe comme vous le souhaitez
+    } else {
+        return false
+    }
+
+
+
 }
