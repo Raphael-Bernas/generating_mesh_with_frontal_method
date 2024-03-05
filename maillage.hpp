@@ -150,7 +150,7 @@ public:
     void ajouterPoint(const Sommet& point) ;        // Ajoute un point à la liste des points
     void supprimerPoint(const Sommet& point) ; // Supprime un point de notre liste
     // Méthode pour générer un nouveau triangle
-    void genererTriangle(const Segment* segment);
+    Triangle genererTriangle();
 };
 
 

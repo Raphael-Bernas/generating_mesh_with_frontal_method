@@ -497,6 +497,7 @@ Triangle Front::genererTriangle() {
     // si un point de elemcourant.points est à une distance de moins de 10% de la longueur du coté & 
     
     // Accéder à l'objet indexé par le float minimal
+    /*
     auto it = segments.begin();
     while (it != segments.end() && it->second.empty()) {
         ++it;
@@ -506,12 +507,57 @@ Triangle Front::genererTriangle() {
         // Maintenant, it pointe vers la première liste non vide
         const auto& premierElement = it->second;
         const Segment* premierSegment = premierElement.front(); // Premier élément de la liste
-        const longueurListe = premierElement.size(); // Longueur de la liste
+        const int longueurListe = premierElement.size(); // Longueur de la liste
         // Utilisez premierSegment et longueurListe comme vous le souhaitez
     } else {
         return false
     }
+    */
 
 
+    if (segments.empty()) {
+        cerr << "Erreur: Aucun segment disponible pour générer des triangles." << endl;
+        return;
+    }
+    // Récupérer le plus petit segment de la map
+    const Segment* smallestSegment = segments.begin()->second.front();
+    float longueur = smallestSegment->longueur();
+    // Troisième point du triangle équilatéral
+    double x3 = smallestSegment->sommets[0]->x + (smallestSegment->sommets[1]->x - smallestSegment->sommets[0]->x) / 2.0;
+    double y3 = smallestSegment->sommets[0]->y + (smallestSegment->sommets[1]->y - smallestSegment->sommets[0]->y) / 2.0 - (sqrt(3) / 2.0) * longueur;
+    Sommet thirdPoint(x3, y3);
+    // Vérifier si le troisième point est à une distance inférieure au dixième de la longueur du triangle équilatéral d'un point du vecteur points
+    for (const Sommet& point : points) {
+        double distance = sqrt(pow(point.x - x3, 2) + pow(point.y - y3, 2));
+        if (distance < longueur / 10.0) {
+            // Si la distance est suffisamment proche, utiliser ce point comme troisième point
+            thirdPoint = point;
+            break;
+        }
+    }
+    // Créer le super triangle de la méthode de Delaunay
+    Triangle superTriangle(&smallestSegment->sommets[0], &smallestSegment->sommets[1], &thirdPoint);
 
+    // Appliquer la méthode de Delaunay pour triangulariser l'intérieur du super triangle
+    // (implémentation non fournie ici)
+
+    // Si le super triangle est valide, le traiter selon les spécifications
+    if (superTriangle.valide()) {
+        // Si le super triangle contient à la fois des points et des segments internes
+        if (!points.empty() && !segments.empty()) {
+            // Créer le plus petit triangle dessiné par les segments internes
+            // (implémentation non fournie ici)
+        } else if (!points.empty()) { // Si le super triangle contient uniquement des points internes
+            // Créer le triangle avec les points internes
+            // (implémentation non fournie ici)
+        } else if (!segments.empty()) { // Si le super triangle contient uniquement des segments internes
+            // Créer le plus petit triangle dessiné par les segments internes
+            // (implémentation non fournie ici)
+        } else {
+            // Créer le triangle sans conditions supplémentaires
+            // (implémentation non fournie ici)
+        }
+    } else {
+        cerr << "Erreur: Le super triangle de la méthode de Delaunay n'est pas valide." << endl;
+    }
 }
