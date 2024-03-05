@@ -510,7 +510,7 @@ Triangle Front::genererTriangle() {
         const int longueurListe = premierElement.size(); // Longueur de la liste
         // Utilisez premierSegment et longueurListe comme vous le souhaitez
     } else {
-        return false
+        return 
     }
     */
 
@@ -523,8 +523,8 @@ Triangle Front::genererTriangle() {
     const Segment* smallestSegment = segments.begin()->second.front();
     float longueur = smallestSegment->longueur();
     // Troisième point du triangle équilatéral
-    double x3 = smallestSegment->sommets[0]->x + (smallestSegment->sommets[1]->x - smallestSegment->sommets[0]->x) / 2.0;
-    double y3 = smallestSegment->sommets[0]->y + (smallestSegment->sommets[1]->y - smallestSegment->sommets[0]->y) / 2.0 - (sqrt(3) / 2.0) * longueur;
+    double x3 = smallestSegment->sommets[0]->x + (smallestSegment->sommets[1]->x - smallestSegment->sommets[0]->x) / 2.0 - (smallestSegment->sommets[1]->y - smallestSegment->sommets[0]->y) * (sqrt(3) / 2.0) ;
+    double y3 = smallestSegment->sommets[0]->y + (smallestSegment->sommets[1]->x - smallestSegment->sommets[0]->x) * (sqrt(3) / 2.0) - (smallestSegment->sommets[1]->y - smallestSegment->sommets[0]->y) / 2.0 ;
     Sommet thirdPoint(x3, y3);
     // Vérifier si le troisième point est à une distance inférieure au dixième de la longueur du triangle équilatéral d'un point du vecteur points
     for (const Sommet& point : points) {
@@ -536,10 +536,18 @@ Triangle Front::genererTriangle() {
         }
     }
     // Créer le super triangle de la méthode de Delaunay
-    Triangle superTriangle(&smallestSegment->sommets[0], &smallestSegment->sommets[1], &thirdPoint);
+    Triangle superTriangle((smallestSegment->sommets)[0], (smallestSegment->sommets)[1], &(thirdPoint));
+    // Bowyer-Watson algorithm
+    // On parcourt les points. Créer une liste des points intérieurs au super triangle.
+    // On sélectionne le premier point de la liste et on crée 3 triangles en reliant ce point aux sommets du super Triangle (attention , il faudra redefinir quels sont les segments qui font partie du nouveau front
+    // On prend le point suivant de la liste. On parcourt les triangles pour trouver les 2 dont il fait partie du cercle circonscrit
+    // On supprime l'arete commune à ces triangles.
+    // On lie ce point aux 4 sommets définissant ces 2 triangles associés
+    // On prend le point suivant ... jusqu'à ce que la liste de points soit vide
 
-    // Appliquer la méthode de Delaunay pour triangulariser l'intérieur du super triangle
-    // (implémentation non fournie ici)
+    // Si le thirdPoint est intérieur au front, on le garde.
+    // Sinon on le supprime et on retire les aretes liant le segment initial à ce thirdPoint
+
 
     // Si le super triangle est valide, le traiter selon les spécifications
     if (superTriangle.valide()) {
