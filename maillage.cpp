@@ -513,62 +513,92 @@ void Front::supprimerPoint(const Sommet& point) {
         }
     }
 }
-Triangle Front::genererTriangle() { 
-    // générer le 3e sommet du triangle équilatéral
-    // calcul de dis = distance du 3e point généréz au point du front le plus proche
-    // si un point de elemcourant.points est à une distance de moins de 10% de la longueur du coté & 
-    
-    // Accéder à l'objet indexé par le float minimal
-    /*
-    auto it = segments.begin();
-    while (it != segments.end() && it->second.empty()) {
-        ++it;
-    }
-
-    if (it != segments.end()) {
-        // Maintenant, it pointe vers la première liste non vide
-        const auto& premierElement = it->second;
-        const Segment* premierSegment = premierElement.front(); // Premier élément de la liste
-        const int longueurListe = premierElement.size(); // Longueur de la liste
-        // Utilisez premierSegment et longueurListe comme vous le souhaitez
-    } else {
-        return 
-    }
-    */
-
-
+vector<Triangle> Front::genererTriangle() { 
     if (segments.empty()) {
         cerr << "Erreur: Aucun segment disponible pour générer des triangles." << endl;
         return;
     }
-    // Récupérer le plus petit segment de la map
-    const Segment* smallestSegment = segments.begin()->second.front();
+    vector<Triangle> nouvTriangles ;                                    // Triangles de sortie
+    const Segment* smallestSegment = segments.begin()->second.front();  // Récupérer le plus petit segment de la map
     float longueur = smallestSegment->longueur();
     // Troisième point du triangle équilatéral
     double x3 = smallestSegment->sommets[0]->x + (smallestSegment->sommets[1]->x - smallestSegment->sommets[0]->x) / 2.0 - (smallestSegment->sommets[1]->y - smallestSegment->sommets[0]->y) * (sqrt(3) / 2.0) ;
     double y3 = smallestSegment->sommets[0]->y + (smallestSegment->sommets[1]->x - smallestSegment->sommets[0]->x) * (sqrt(3) / 2.0) - (smallestSegment->sommets[1]->y - smallestSegment->sommets[0]->y) / 2.0 ;
     Sommet thirdPoint(x3, y3);
-    // Vérifier si le troisième point est à une distance inférieure au dixième de la longueur du triangle équilatéral d'un point du vecteur points
+    // Si un point est à une distance suffisamment proche, utiliser ce point comme troisième point du triangle
     for (const Sommet& point : points) {
         double distance = sqrt(pow(point.x - x3, 2) + pow(point.y - y3, 2));
         if (distance < longueur / 10.0) {
-            // Si la distance est suffisamment proche, utiliser ce point comme troisième point
             thirdPoint = point;
             break;
         }
     }
     // Créer le super triangle de la méthode de Delaunay
     Triangle superTriangle((smallestSegment->sommets)[0], (smallestSegment->sommets)[1], &(thirdPoint));
-    // Bowyer-Watson algorithm
-    // On parcourt les points. Créer une liste des points intérieurs au super triangle.
-    // On sélectionne le premier point de la liste et on crée 3 triangles en reliant ce point aux sommets du super Triangle (attention , il faudra redefinir quels sont les segments qui font partie du nouveau front
-    // On prend le point suivant de la liste. On parcourt les triangles pour trouver les 2 dont il fait partie du cercle circonscrit
-    // On supprime l'arete commune à ces triangles.
-    // On lie ce point aux 4 sommets définissant ces 2 triangles associés
-    // On prend le point suivant ... jusqu'à ce que la liste de points soit vide
+    // (attention , il faudra redefinir quels sont les segments qui font partie du nouveau front
 
-    // Si le thirdPoint est intérieur au front, on le garde.
-    // Sinon on le supprime et on retire les aretes liant le segment initial à ce thirdPoint
+    // Algorithme de Bowyer-Watson :
+    // Liste des points intérieurs au super triangle
+    vector<Sommet> points_int;
+    for (const Sommet& point : points) {
+        if (superTriangle.in_triangle(point)) {
+            points_int.push_back(point);
+        }
+    }
+    // Créer trois triangles en reliant le premier point aux sommets du super triangle
+    Triangle triangle1((superTriangle.sommets)[0], (superTriangle.sommets)[1], &(points_int.front()));
+    Triangle triangle2((superTriangle.sommets)[1], (superTriangle.sommets)[2], &(points_int.front()));
+    Triangle triangle3((superTriangle.sommets)[2], (superTriangle.sommets)[0], &(points_int.front()));
+    // Ajouter ces triangles à la liste de triangles de sortie
+    nouvTriangles.push_back(triangle1);
+    nouvTriangles.push_back(triangle2);
+    nouvTriangles.push_back(triangle3);
+    // Supprimer le premier point de la liste intérieure
+    points_int.erase(points_int.begin());
+
+    for (Sommet& pointk : points_int) {     // Parcourt des points intérieurs au super triangle
+        // Triangles dont les cercles circonscrits contiennent pointk
+        vector<Triangle> Tk ;
+        for (auto it = nouvTriangles.begin(); it != nouvTriangles.end(); ++it) {
+            if ((*it).in_circle_triangle(pointk)) {
+                Tk.push_back(*it) ;
+                if (Tk.size() == 2) {
+                    break;
+                }
+            }
+        }
+        vector<Sommet> Tk_sommets;              // Sommets des triangles de Tk
+        for (const auto& triangle : Tk) {
+            for (const auto& sommet : triangle.sommets) {
+                Tk_sommets.push_back(*sommet);
+            }
+            sort(Tk_sommets.begin(), Tk_sommets.end());     // Supprimer les doublons dans Tk_sommets
+            Tk_sommets.erase(unique(Tk_sommets.begin(), Tk_sommets.end()), Tk_sommets.end());
+        }
+        // Supprimer de nouvTriangles les triangles Tk :
+        for (const auto& triangle : Tk) {
+            nouvTriangles.erase(remove(nouvTriangles.begin(), nouvTriangles.end(), triangle), nouvTriangles.end());
+        }    
+        // Créer les 4 triangles reliant pointk aux 4 sommets de Tk_sommets :
+        int n = Tk_sommets.size() ;
+        for (size_t i = 0; i < n ; ++i) {
+            Triangle triangle(&Tk_sommets[i], &Tk_sommets[(i+1)%n], &pointk);
+            nouvTriangles.push_back(triangle);
+        }
+    }
+    if (!int_front(thirdPoint)) {
+        // Supprimer tous les triangles de nouvTriangles contenant thirdPoint si ce dernier est extérieur au front
+        nouvTriangles.erase(std::remove_if(nouvTriangles.begin(), nouvTriangles.end(), [&thirdPoint](const Triangle& triangle) {
+            for (const auto& sommet : triangle.sommets) {
+                if (*sommet == thirdPoint) {
+                    return true;
+                }
+            }
+            return false;
+        }), nouvTriangles.end());
+    }
+
+
 
 
     // Si le super triangle est valide, le traiter selon les spécifications
@@ -590,4 +620,12 @@ Triangle Front::genererTriangle() {
     } else {
         cerr << "Erreur: Le super triangle de la méthode de Delaunay n'est pas valide." << endl;
     }
+
+
+
+
+
+
+
+    return nouvTriangles;
 }

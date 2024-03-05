@@ -152,7 +152,7 @@ public:
     void supprimerSegment(const Segment* segment) ;     // Supprime une arête du front
     void ajouterPoint(const Sommet& point) ;            // Ajoute un point à la liste des points
     void supprimerPoint(const Sommet& point) ;          // Supprime un point de notre liste
-    Triangle genererTriangle();                         // Méthode pour générer un nouveau triangle
+    vector<Triangle> genererTriangle();                         // Méthode pour générer un nouveau triangle
 };
 
 
