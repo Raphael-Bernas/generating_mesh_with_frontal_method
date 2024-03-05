@@ -78,10 +78,10 @@ public:
 };
 
 
+
 //====================================================================================================
 //                              Classe Triangulation et ses dérivées
 //====================================================================================================
-
 class Triangulation {
 public:
     vector<Sommet*> sommets ;
@@ -101,7 +101,6 @@ public:
     void symetrieAxeOblique(double x0, double y0, double angle) ;
         // L'axe est renseigné par un de ses points (x0,y0), et son orientation angle
 };
-
 class MaillageRectangle : public Triangulation {        // Classe dérivée de la classe Triangulation
 public:
     MaillageRectangle(double largeur, double hauteur, int nx, int ny) : Triangulation(), largeur(largeur), hauteur(hauteur), nx(nx), ny(ny) {
@@ -121,7 +120,6 @@ public:
     void genererMaillageRectangle(double largeur, double hauteur, const vector<double>& abscisses, const vector<double>& ordonnees) ;
     // Cas non régulier : listes d’abcisses et d’ordonnées spécifiées
 };
-
 class MaillageSecteurAngulaire : public Triangulation { // Classe dérivée de la classe Triangulation
 public:
     double rayon, angle ;
@@ -132,16 +130,15 @@ public:
     void generersecteurangleaigu() ;
     void genererSecteurAngulaire() ;
 };
-
 class MaillageFront : public Triangulation {
 
 };
 
 
+
 //====================================================================================================
 //                              Méthode Frontale et ses dérivées
 //====================================================================================================
-
 class Front {
 public:
     map<double, list<const Segment*>> segments;         // Liste de liste d'arêtes triées par taille
@@ -153,7 +150,7 @@ public:
     void ajouterPoint(const Sommet& point) ;        // Ajoute un point à la liste des points
 
     // Méthode pour générer un nouveau triangle
-    void genererTriangle();
+    void genererTriangle(const Segment* segment);
 };
 
 

@@ -491,3 +491,8 @@ void Front::supprimerSegment(const Segment* segment) {    // Supprime une arête
 void Front::ajouterPoint(const Sommet& point) {     // Ajoute un point à la liste des points
     points.push_back(point);
 }
+void Front::genererTriangle(const Segment* segment) { 
+    // générer le 3e sommet du triangle équilatéral
+    // calcul de dis = distance du 3e point généréz au point du front le plus proche
+    // si un point de elemcourant.points est à une distance de moins de 10% de la longueur du coté & 
+}
