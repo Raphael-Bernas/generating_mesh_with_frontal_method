@@ -455,11 +455,11 @@ void MaillageSecteurAngulaire::genererSecteurAngulaire() {
         fusionnerMaillages(maillage); // Assignation au maillage courant
     }
 }
-MaillageFront::MaillageFront(Front* AFront): Triangulation(), TheFront(AFront) {}
+MaillageFront::MaillageFront(Front* AFront) : Triangulation(), TheFront(AFront) {}
 MaillageFront::MaillageFront(char modele, float Hpas): Triangulation() {
     // Remplir le Front en fonction de différent modèle
 }
-void MaillageFront::MethodeFrontal(){
+bool MaillageFront::MethodeFrontal(){
     bool State = true;
     while (State) {
         // Appliquer GenererTriangle

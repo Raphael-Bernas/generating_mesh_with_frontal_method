@@ -131,10 +131,10 @@ public:
     void genererSecteurAngulaire() ;
 };
 class MaillageFront : public Triangulation {
-    Front* TheFront
-    MaillageFront(Front* AFront);
-    MaillageFront(char modele, float Hpas);
-    bool MethodeFrontal();
+    Front* TheFront ;
+    MaillageFront(Front* AFront) ;
+    MaillageFront(char modele, float Hpas) ;
+    bool MethodeFrontal() ;
 };
 
 
@@ -144,19 +144,16 @@ class MaillageFront : public Triangulation {
 //====================================================================================================
 class Front {
 public:
-    map<double, list<const Segment*>> segments;         // Liste de liste d'arêtes triées par taille
+    map<double, list<const Segment*>> segments;     // Liste de liste d'arêtes triées par taille
     vector<Sommet> points;                          // Liste des points utilisables pour générer des triangles
 
-    Front(const Segment** Nsegments, vector<Sommet> Npoints); // Constructeur Front
-    void ajouterSegment(const Segment* psegment) ;        // Ajoute une arête au front
-    void supprimerSegment(const Segment* segment) ;       // Supprime une arête du front
-    void ajouterPoint(const Sommet& point) ;        // Ajoute un point à la liste des points
-    void supprimerPoint(const Sommet& point) ; // Supprime un point de notre liste
-    // Méthode pour générer un nouveau triangle
-    Triangle genererTriangle();
+    Front(const Segment** Nsegments, vector<Sommet> Npoints) ;      // Constructeur Front
+    void ajouterSegment(const Segment* psegment) ;      // Ajoute une arête au front
+    void supprimerSegment(const Segment* segment) ;     // Supprime une arête du front
+    void ajouterPoint(const Sommet& point) ;            // Ajoute un point à la liste des points
+    void supprimerPoint(const Sommet& point) ;          // Supprime un point de notre liste
+    Triangle genererTriangle();                         // Méthode pour générer un nouveau triangle
 };
-
-
 
 
 #endif  //maillage_HPP_INCLUDED
