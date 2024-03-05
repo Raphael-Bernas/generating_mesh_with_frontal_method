@@ -491,3 +491,11 @@ void Front::supprimerSegment(const Segment* segment) {    // Supprime une arête
 void Front::ajouterPoint(const Sommet& point) {     // Ajoute un point à la liste des points
     points.push_back(point);
 }
+void supprimerPoint(const Sommet& point) {
+    for (auto it = points.begin(); it != points.end(); ++it) {
+        if (*it == point) {
+            points.erase(it);
+            break; // Sortir de la boucle une fois que le point est trouvé et supprimé
+        }
+    }
+}
