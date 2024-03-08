@@ -95,6 +95,7 @@ public:
     bool int_front(const Sommet Point);                 // Méthode pour vérifier si un point est dans le front
     int compteSegment();                                // Méthode pour compter le nombre de segments dans le front
     bool empty() const {return segments.empty();}       // Méthode pour vérifier si le front est vide
+    void save();                                        // Méthode pour sauvegarder le front
 };
 
 //====================================================================================================
@@ -118,6 +119,7 @@ public:
     void symetriePoint(double pointX, double pointY) ;
     void symetrieAxeOblique(double x0, double y0, double angle) ;
         // L'axe est renseigné par un de ses points (x0,y0), et son orientation angle
+    void save() ;   // Sauvegarde de la triangulation
 };
 class MaillageRectangle : public Triangulation {        // Classe dérivée de la classe Triangulation
 public:
