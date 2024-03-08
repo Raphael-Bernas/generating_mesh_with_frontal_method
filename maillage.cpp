@@ -593,7 +593,7 @@ vector<Triangle> Front::genererTriangle() {
             }
         }
         // Supprimer de nouvTriangles les triangles Tk :
-        for (const auto& triangle : Tk) {
+        for (Triangle& triangle : Tk) {
             nouvTriangles.erase(remove(nouvTriangles.begin(), nouvTriangles.end(), triangle), nouvTriangles.end());
         }    
         // Créer les 4 triangles reliant pointk aux 4 sommets de Tk_sommets :
@@ -603,46 +603,21 @@ vector<Triangle> Front::genererTriangle() {
             nouvTriangles.push_back(triangle);
         }
     }
-    if (!int_front(thirdPoint)) {
-        // Supprimer tous les triangles de nouvTriangles contenant thirdPoint si ce dernier est extérieur au front
-        nouvTriangles.erase(std::remove_if(nouvTriangles.begin(), nouvTriangles.end(), [&thirdPoint](const Triangle& triangle) {
-            for (const auto& sommet : triangle.sommets) {
-                if (*sommet == thirdPoint) {
-                    return true;
-                }
+    for (auto it = nouvTriangles.begin(); it != nouvTriangles.end();) {
+        Triangle& triangle = *it;
+        bool removeTriangle = false;
+        for (Sommet* sommet : triangle.sommets) {
+            if (!int_front(*sommet)) {  // Vérifier si le sommet est à l'intérieur du front
+                removeTriangle = true;
+                break;
             }
-            return false;
-        }), nouvTriangles.end());
-    }
-
-
-/*
-
-    // Si le super triangle est valide, le traiter selon les spécifications
-    if (superTriangle.valide()) {
-        // Si le super triangle contient à la fois des points et des segments internes
-        if (!points.empty() && !segments.empty()) {
-            // Créer le plus petit triangle dessiné par les segments internes
-            // (implémentation non fournie ici)
-        } else if (!points.empty()) { // Si le super triangle contient uniquement des points internes
-            // Créer le triangle avec les points internes
-            // (implémentation non fournie ici)
-        } else if (!segments.empty()) { // Si le super triangle contient uniquement des segments internes
-            // Créer le plus petit triangle dessiné par les segments internes
-            // (implémentation non fournie ici)
-        } else {
-            // Créer le triangle sans conditions supplémentaires
-            // (implémentation non fournie ici)
         }
-    } else {
-        cerr << "Erreur: Le super triangle de la méthode de Delaunay n'est pas valide." << endl;
+        if (removeTriangle) {   // Supprimer le triangle si un de ses sommets n'est pas à l'intérieur du front
+            it = nouvTriangles.erase(it);
+        } else {
+            ++it;
+        }
     }
-
-
-*/
-
-
-
-
+    
     return nouvTriangles;
 }
