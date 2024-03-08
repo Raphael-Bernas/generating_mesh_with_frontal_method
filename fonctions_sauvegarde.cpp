@@ -33,10 +33,9 @@ void Triangulation::save(){
 void Front::save(){
     ofstream fichier("historique_F.txt");   // Fichier mémoire
     for (const auto& pair : segments) {
-    // Parcours des segments dans l'objet Front
+    // Parcours des aretes dans l'objet Front
         for (const auto& segment : pair.second) {
             // Ecriture des sommets des segments
-            fichier <<"A " ;                     // Empreinte arete (ou plutôt segment ici)
             fichier <<segment->sommets[0]->x <<" " <<segment->sommets[0]->y <<" " ;
             fichier <<segment->sommets[1]->x <<" " <<segment->sommets[1]->y <<" " ;
         }
