@@ -180,10 +180,9 @@ int Front::compteSegment() {
     int n_segment = 0;
     // Parcours des segments dans l'objet Front
     for (const auto& pair : segments) {
-        const list<const Segment*>& listeSegments = pair.second;
-        for (const Segment* segment : listeSegments) {
-            n_segment = n_segment + 1;
-        }
+        // Pour chaque paire clé-valeur (double, list<const Segment*>),
+        // ajouter la taille de la liste à n_segment
+        n_segment += pair.second.size();
     }
     return n_segment;
 }
