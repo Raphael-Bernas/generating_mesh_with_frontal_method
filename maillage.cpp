@@ -460,11 +460,68 @@ MaillageFront::MaillageFront(char modele, float Hpas): Triangulation() {
     // Remplir le Front en fonction de différent modèle
 }
 bool MaillageFront::MethodeFrontal(){
+    if (TheFront->empty()) {
+        std::cerr << "Error: No Front To Proceed" << std::endl; 
+        return  false
+    }
     bool State = true;
     while (State) {
         // Appliquer GenererTriangle
+        vector<Triangle> FrontCalc = TheFront->genererTriangle();
+        for(int i = 0; i < int(sizeof(FrontCalc)); ++i){
+            Triangle* New_Triangle = &FrontCalc[i];
+            Sommet* New_Sommet1 = New_Triangle->sommets[1];
+            Sommet* New_Sommet2 = New_Triangle->sommets[2];
+            Sommet* New_Sommet3 = New_Triangle->sommets[3];
+            triangles.push_back(New_Triangle);
+            if(*find(sommets.begin(), sommets.end(), New_Sommet1 ) != New_Sommet1) {
+                sommets.push_back(New_Sommet1);
+            }
+            if(*find(sommets.begin(), sommets.end(), New_Sommet2 ) != New_Sommet2) {
+                sommets.push_back(New_Sommet2);
+            }
+            if(*find(sommets.begin(), sommets.end(), New_Sommet3 ) != New_Sommet3) {
+                sommets.push_back(New_Sommet3);
+            }
+        }
+        if(TheFront->compteSegment() == 3){
+            state = false;
+        }
+        if(TheFront->compteSegment() == 0){
+            std::cerr << "Error: No Convergence of Frontal Method" << std::endl; 
+            return  false;
+        }
     }
-    return State;
+    // Création du dernier triangle
+    Triangle* Final_Triangle;
+    int i_state = 0;
+    for (const auto& pair : front.segments) {
+        const list<Segment*>& listeSegments = pair.second;
+        for (Segment* segment : listeSegments) {
+            if(!(Final_Triangle->in_triangle(segment->sommets[0]))){
+                Final_Triangle->sommets[i_state] = segment->sommets[0];
+                i_state = i_state + 1;
+                if(*find(sommets.begin(), sommets.end(), segment->sommets[0] ) != segment->sommets[0]) {
+                    sommets.push_back(segment->sommets[0]);
+                }
+            }
+            if(!(Final_Triangle->in_triangle(segment->sommets[1]))){
+                Final_Triangle->sommets[i_state] = segment->sommets[1];
+                i_state = i_state + 1;
+                if(*find(sommets.begin(), sommets.end(), segment->sommets[1] ) != segment->sommets[1]) {
+                    sommets.push_back(segment->sommets[1]);
+                }
+            }
+            if(i_state == 3){
+                break;
+            }
+        }
+        if(i_state == 3){
+                break;
+        }
+    }
+    triangles.push_back(Final_Triangle);
+    return true;
 }
 
 //====================================================================================================
@@ -510,6 +567,17 @@ void Front::supprimerSegment(const Segment* segment) {    // Supprime une arête
             segments.erase(it);
         }
     }
+}
+int compteSegment() {
+    int n_segment = 0;
+    // Parcours des segments dans l'objet Front
+    for (const auto& pair : front.segments) {
+        const list<const Segment*>& listeSegments = pair.second;
+        for (const Segment* segment : listeSegments) {
+            n_segment = n_segment + 1;
+        }
+    }
+    return n_segment;
 }
 void Front::ajouterPoint(const Sommet& point) {     // Ajoute un point à la liste des points
     points.push_back(point);
