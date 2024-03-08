@@ -156,6 +156,181 @@ bool Domaine::operator==(const Domaine& autre) const {       // Surcharge de l'o
     return (dim == autre.dim) ;
 }
 
+
+//====================================================================================================
+//                              Méthode Frontale et ses dérivées
+//====================================================================================================
+Front::Front(const Segment** Nsegments, vector<Sommet> Npoints) {
+    for (int i = 0; i < int(sizeof(Nsegments)); ++i) {
+        ajouterSegment(Nsegments[i]);
+    }
+    for (int i = 0; i < int(sizeof(Npoints)); ++i) {
+        ajouterPoint(Npoints[i]);
+    }
+}
+Front::Front(const Segment** Nsegments) {
+    for (int i = 0; i < int(sizeof(Nsegments)); ++i) {
+        ajouterSegment(Nsegments[i]);
+        for (int j = 0; j < 2; ++j) {
+            ajouterPoint(*Nsegments[i]->sommets[j]);
+        }
+    }
+}
+int Front::compteSegment() {
+    int n_segment = 0;
+    // Parcours des segments dans l'objet Front
+    for (const auto& pair : segments) {
+        const list<const Segment*>& listeSegments = pair.second;
+        for (const Segment* segment : listeSegments) {
+            n_segment = n_segment + 1;
+        }
+    }
+    return n_segment;
+}
+void Front::ajouterSegment(const Segment* psegment) {     // Ajouter une arête au front
+    // Rechercher de la liste correspondant à la taille de l'arête
+    auto it = segments.find(psegment->longueur());
+
+    // Si une liste pour cette taille existe déjà, ajouter le pointeur vers l'arête à cette liste
+    if (it != segments.end()) {
+        it->second.push_back(psegment);
+    } else { // Sinon, crée une nouvelle liste contenant uniquement ce pointeur vers l'arête
+            segments[psegment->longueur()] = list<const Segment*>{psegment};
+    }
+}
+void Front::supprimerSegment(const Segment* segment) {    // Supprime une arête de la liste associée à sa taille
+    // Recherche de la liste correspondant à la taille de l'arête
+    auto it = segments.find(segment->longueur());
+
+    // Si une liste pour cette taille existe, recherche et supprime l'arête
+    if (it != segments.end()) {
+        it->second.remove(segment);
+        // Vérifier si la liste est devenue vide après la suppression
+        if (it->second.empty()) {
+            // Si la liste est vide, supprimer cette entrée du map
+            segments.erase(it);
+        }
+    }
+}
+void Front::ajouterPoint(const Sommet& point) {     // Ajoute un point à la liste des points
+    points.push_back(point);
+}
+void Front::supprimerPoint(const Sommet& point) {
+    for (auto it = points.begin(); it != points.end(); ++it) {
+        if (*it == point) {
+            points.erase(it);
+            break; // Sortir de la boucle une fois que le point est trouvé et supprimé
+        }
+    }
+};
+bool Front::int_front(const Sommet Point){ 
+    // Méthode pour vérifier si un point est dans le front
+    // On parcourt tous les segments du front et pour chaque segment,
+    // on vérifie si le triplet (premier point du segment, deuxième point du segment, point considéré) est orienté dans le sens direct)
+    for (auto it = segments.begin(); it != segments.end(); ++it) {
+        for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
+            if ( ((*it2)->sommets[1]->x - (*it2)->sommets[0]->x)*(Point.y - (*it2)->sommets[0]->y) - ((*it2)->sommets[1]->y - (*it2)->sommets[0]->y)*(Point.x - (*it2)->sommets[0]->x) < 0) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+vector<Triangle> Front::genererTriangle() { 
+    vector<Triangle> nouvTriangles ;                                    // Triangles de sortie
+    if (segments.empty()) {
+        cerr << "Erreur: Aucun segment disponible pour générer des triangles." << endl;
+        return nouvTriangles;
+    }
+    const Segment* smallestSegment = segments.begin()->second.front();  // Récupérer le plus petit segment de la map
+    float longueur = smallestSegment->longueur();
+    // Troisième point du triangle équilatéral
+    double x3 = (smallestSegment->sommets[1]->x + smallestSegment->sommets[0]->x) / 2.0 - (smallestSegment->sommets[1]->y - smallestSegment->sommets[0]->y) * (sqrt(3) / 2.0) ;
+    double y3 = (smallestSegment->sommets[1]->y + smallestSegment->sommets[0]->y) / 2.0 - (smallestSegment->sommets[1]->x - smallestSegment->sommets[0]->x) * (sqrt(3) / 2.0) ;
+    Sommet thirdPoint(x3, y3);
+    // Si un point est à une distance suffisamment proche, utiliser ce point comme troisième point du triangle
+    for (const Sommet& point : points) {
+        double distance = sqrt(pow(point.x - x3, 2) + pow(point.y - y3, 2));
+        if (distance < longueur / 10.0) {
+            thirdPoint = point;
+            break;
+        }
+    }
+    // Créer le super triangle de la méthode de Delaunay
+    Triangle superTriangle((smallestSegment->sommets)[0], (smallestSegment->sommets)[1], &(thirdPoint));
+    // (attention , il faudra redefinir quels sont les segments qui font partie du nouveau front
+
+    // Algorithme de Bowyer-Watson :
+    // Liste des points intérieurs au super triangle
+    vector<Sommet> points_int;
+    for (const Sommet& point : points) {
+        if (superTriangle.in_triangle(point)) {
+            points_int.push_back(point);
+        }
+    }
+    // Créer trois triangles en reliant le premier point aux sommets du super triangle
+    Triangle triangle1((superTriangle.sommets)[0], (superTriangle.sommets)[1], &(points_int.front()));
+    Triangle triangle2((superTriangle.sommets)[1], (superTriangle.sommets)[2], &(points_int.front()));
+    Triangle triangle3((superTriangle.sommets)[2], (superTriangle.sommets)[0], &(points_int.front()));
+    // Ajouter ces triangles à la liste de triangles de sortie
+    nouvTriangles.push_back(triangle1);
+    nouvTriangles.push_back(triangle2);
+    nouvTriangles.push_back(triangle3);
+    // Supprimer le premier point de la liste intérieure
+    points_int.erase(points_int.begin());
+
+    for (Sommet& pointk : points_int) {     // Parcourt des points intérieurs au super triangle
+        // Triangles dont les cercles circonscrits contiennent pointk
+        vector<Triangle> Tk ;
+        for (auto it = nouvTriangles.begin(); it != nouvTriangles.end(); ++it) {
+            if ((*it).in_circle_triangle(pointk)) {
+                Tk.push_back(*it) ;
+                if (Tk.size() == 2) {
+                    break;
+                }
+            }
+        }
+        vector<Sommet> Tk_sommets;              // Sommets des triangles de Tk
+        for (const auto& triangle : Tk) {
+            for (const auto& sommet : triangle.sommets) {
+                // Vérifie si le sommet existe déjà dans Tk_sommets
+                auto it = find(Tk_sommets.begin(), Tk_sommets.end(), *sommet);
+                if (it == Tk_sommets.end()) {
+                    // Si le sommet n'est pas déjà présent, l'ajouter à Tk_sommets_uniques
+                    Tk_sommets.push_back(*sommet);
+                }
+            }
+        }
+        // Supprimer de nouvTriangles les triangles Tk :
+        for (Triangle& triangle : Tk) {
+            nouvTriangles.erase(remove(nouvTriangles.begin(), nouvTriangles.end(), triangle), nouvTriangles.end());
+        }    
+        // Créer les 4 triangles reliant pointk aux 4 sommets de Tk_sommets :
+        int n = Tk_sommets.size() ;
+        for (int i = 0; i < n ; ++i) {
+            Triangle triangle(&Tk_sommets[i], &Tk_sommets[(i+1)%n], &pointk);
+            nouvTriangles.push_back(triangle);
+        }
+    }
+    for (auto it = nouvTriangles.begin(); it != nouvTriangles.end();) {
+        Triangle& triangle = *it;
+        bool removeTriangle = false;
+        for (Sommet* sommet : triangle.sommets) {
+            if (!int_front(*sommet)) {  // Vérifier si le sommet est à l'intérieur du front
+                removeTriangle = true;
+                break;
+            }
+        }
+        if (removeTriangle) {   // Supprimer le triangle si un de ses sommets n'est pas à l'intérieur du front
+            it = nouvTriangles.erase(it);
+        } else {
+            ++it;
+        }
+    }
+
+    return nouvTriangles;
+}
+
 //====================================================================================================
 void Triangulation::exportMATLAB(const string& nomFichier) const {
 // Conversion en un fichier txt lisible sur MATLAB
@@ -522,178 +697,4 @@ bool MaillageFront::MethodeFrontal(){
     }
     triangles.push_back(Final_Triangle);
     return true;
-}
-
-//====================================================================================================
-//                              Méthode Frontale et ses dérivées
-//====================================================================================================
-Front::Front(const Segment** Nsegments, vector<Sommet> Npoints) {
-    for (int i = 0; i < int(sizeof(Nsegments)); ++i) {
-        ajouterSegment(Nsegments[i]);
-    }
-    for (int i = 0; i < int(sizeof(Npoints)); ++i) {
-        ajouterPoint(Npoints[i]);
-    }
-}
-Front::Front(const Segment** Nsegments) {
-    for (int i = 0; i < int(sizeof(Nsegments)); ++i) {
-        ajouterSegment(Nsegments[i]);
-        for (int j = 0; j < 2; ++j) {
-            ajouterPoint(*Nsegments[i]->sommets[j]);
-        }
-    }
-}
-int Front::compteSegment() {
-    int n_segment = 0;
-    // Parcours des segments dans l'objet Front
-    for (const auto& pair : segments) {
-        const list<const Segment*>& listeSegments = pair.second;
-        for (const Segment* segment : listeSegments) {
-            n_segment = n_segment + 1;
-        }
-    }
-    return n_segment;
-}
-void Front::ajouterSegment(const Segment* psegment) {     // Ajouter une arête au front
-    // Rechercher de la liste correspondant à la taille de l'arête
-    auto it = segments.find(psegment->longueur());
-
-    // Si une liste pour cette taille existe déjà, ajouter le pointeur vers l'arête à cette liste
-    if (it != segments.end()) {
-        it->second.push_back(psegment);
-    } else { // Sinon, crée une nouvelle liste contenant uniquement ce pointeur vers l'arête
-            segments[psegment->longueur()] = list<const Segment*>{psegment};
-    }
-}
-void Front::supprimerSegment(const Segment* segment) {    // Supprime une arête de la liste associée à sa taille
-    // Recherche de la liste correspondant à la taille de l'arête
-    auto it = segments.find(segment->longueur());
-
-    // Si une liste pour cette taille existe, recherche et supprime l'arête
-    if (it != segments.end()) {
-        it->second.remove(segment);
-        // Vérifier si la liste est devenue vide après la suppression
-        if (it->second.empty()) {
-            // Si la liste est vide, supprimer cette entrée du map
-            segments.erase(it);
-        }
-    }
-}
-void Front::ajouterPoint(const Sommet& point) {     // Ajoute un point à la liste des points
-    points.push_back(point);
-}
-void Front::supprimerPoint(const Sommet& point) {
-    for (auto it = points.begin(); it != points.end(); ++it) {
-        if (*it == point) {
-            points.erase(it);
-            break; // Sortir de la boucle une fois que le point est trouvé et supprimé
-        }
-    }
-};
-bool Front::int_front(const Sommet Point){ 
-    // Méthode pour vérifier si un point est dans le front
-    // On parcourt tous les segments du front et pour chaque segment,
-    // on vérifie si le triplet (premier point du segment, deuxième point du segment, point considéré) est orienté dans le sens direct)
-    for (auto it = segments.begin(); it != segments.end(); ++it) {
-        for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
-            if ( ((*it2)->sommets[1]->x - (*it2)->sommets[0]->x)*(Point.y - (*it2)->sommets[0]->y) - ((*it2)->sommets[1]->y - (*it2)->sommets[0]->y)*(Point.x - (*it2)->sommets[0]->x) < 0) {
-                return false;
-            }
-        }
-    }
-    return true;
-}
-vector<Triangle> Front::genererTriangle() { 
-    vector<Triangle> nouvTriangles ;                                    // Triangles de sortie
-    if (segments.empty()) {
-        cerr << "Erreur: Aucun segment disponible pour générer des triangles." << endl;
-        return nouvTriangles;
-    }
-    const Segment* smallestSegment = segments.begin()->second.front();  // Récupérer le plus petit segment de la map
-    float longueur = smallestSegment->longueur();
-    // Troisième point du triangle équilatéral
-    double x3 = (smallestSegment->sommets[1]->x + smallestSegment->sommets[0]->x) / 2.0 - (smallestSegment->sommets[1]->y - smallestSegment->sommets[0]->y) * (sqrt(3) / 2.0) ;
-    double y3 = (smallestSegment->sommets[1]->y + smallestSegment->sommets[0]->y) / 2.0 - (smallestSegment->sommets[1]->x - smallestSegment->sommets[0]->x) * (sqrt(3) / 2.0) ;
-    Sommet thirdPoint(x3, y3);
-    // Si un point est à une distance suffisamment proche, utiliser ce point comme troisième point du triangle
-    for (const Sommet& point : points) {
-        double distance = sqrt(pow(point.x - x3, 2) + pow(point.y - y3, 2));
-        if (distance < longueur / 10.0) {
-            thirdPoint = point;
-            break;
-        }
-    }
-    // Créer le super triangle de la méthode de Delaunay
-    Triangle superTriangle((smallestSegment->sommets)[0], (smallestSegment->sommets)[1], &(thirdPoint));
-    // (attention , il faudra redefinir quels sont les segments qui font partie du nouveau front
-
-    // Algorithme de Bowyer-Watson :
-    // Liste des points intérieurs au super triangle
-    vector<Sommet> points_int;
-    for (const Sommet& point : points) {
-        if (superTriangle.in_triangle(point)) {
-            points_int.push_back(point);
-        }
-    }
-    // Créer trois triangles en reliant le premier point aux sommets du super triangle
-    Triangle triangle1((superTriangle.sommets)[0], (superTriangle.sommets)[1], &(points_int.front()));
-    Triangle triangle2((superTriangle.sommets)[1], (superTriangle.sommets)[2], &(points_int.front()));
-    Triangle triangle3((superTriangle.sommets)[2], (superTriangle.sommets)[0], &(points_int.front()));
-    // Ajouter ces triangles à la liste de triangles de sortie
-    nouvTriangles.push_back(triangle1);
-    nouvTriangles.push_back(triangle2);
-    nouvTriangles.push_back(triangle3);
-    // Supprimer le premier point de la liste intérieure
-    points_int.erase(points_int.begin());
-
-    for (Sommet& pointk : points_int) {     // Parcourt des points intérieurs au super triangle
-        // Triangles dont les cercles circonscrits contiennent pointk
-        vector<Triangle> Tk ;
-        for (auto it = nouvTriangles.begin(); it != nouvTriangles.end(); ++it) {
-            if ((*it).in_circle_triangle(pointk)) {
-                Tk.push_back(*it) ;
-                if (Tk.size() == 2) {
-                    break;
-                }
-            }
-        }
-        vector<Sommet> Tk_sommets;              // Sommets des triangles de Tk
-        for (const auto& triangle : Tk) {
-            for (const auto& sommet : triangle.sommets) {
-                // Vérifie si le sommet existe déjà dans Tk_sommets
-                auto it = find(Tk_sommets.begin(), Tk_sommets.end(), *sommet);
-                if (it == Tk_sommets.end()) {
-                    // Si le sommet n'est pas déjà présent, l'ajouter à Tk_sommets_uniques
-                    Tk_sommets.push_back(*sommet);
-                }
-            }
-        }
-        // Supprimer de nouvTriangles les triangles Tk :
-        for (Triangle& triangle : Tk) {
-            nouvTriangles.erase(remove(nouvTriangles.begin(), nouvTriangles.end(), triangle), nouvTriangles.end());
-        }    
-        // Créer les 4 triangles reliant pointk aux 4 sommets de Tk_sommets :
-        int n = Tk_sommets.size() ;
-        for (int i = 0; i < n ; ++i) {
-            Triangle triangle(&Tk_sommets[i], &Tk_sommets[(i+1)%n], &pointk);
-            nouvTriangles.push_back(triangle);
-        }
-    }
-    for (auto it = nouvTriangles.begin(); it != nouvTriangles.end();) {
-        Triangle& triangle = *it;
-        bool removeTriangle = false;
-        for (Sommet* sommet : triangle.sommets) {
-            if (!int_front(*sommet)) {  // Vérifier si le sommet est à l'intérieur du front
-                removeTriangle = true;
-                break;
-            }
-        }
-        if (removeTriangle) {   // Supprimer le triangle si un de ses sommets n'est pas à l'intérieur du front
-            it = nouvTriangles.erase(it);
-        } else {
-            ++it;
-        }
-    }
-
-    return nouvTriangles;
 }
