@@ -464,6 +464,7 @@ bool MaillageFront::MethodeFrontal(){
     while (State) {
         // Appliquer GenererTriangle
     }
+    return State;
 }
 
 //====================================================================================================
@@ -512,13 +513,26 @@ void Front::supprimerPoint(const Sommet& point) {
             break; // Sortir de la boucle une fois que le point est trouvé et supprimé
         }
     }
+};
+bool Front::int_front(const Sommet Point){ 
+    // Méthode pour vérifier si un point est dans le front
+    // On parcourt tous les segments du front et pour chaque segment,
+    // on vérifie si le triplet (premier point du segment, deuxième point du segment, point considéré) est orienté dans le sens direct)
+    for (auto it = segments.begin(); it != segments.end(); ++it) {
+        for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
+            if ( ((*it2)->sommets[1]->x - (*it2)->sommets[0]->x)*(Point.y - (*it2)->sommets[0]->y) - ((*it2)->sommets[1]->y - (*it2)->sommets[0]->y)*(Point.x - (*it2)->sommets[0]->x) < 0) {
+                return false;
+            }
+        }
+    }
+    return true;
 }
 vector<Triangle> Front::genererTriangle() { 
+    vector<Triangle> nouvTriangles ;                                    // Triangles de sortie
     if (segments.empty()) {
         cerr << "Erreur: Aucun segment disponible pour générer des triangles." << endl;
-        return;
+        return nouvTriangles;
     }
-    vector<Triangle> nouvTriangles ;                                    // Triangles de sortie
     const Segment* smallestSegment = segments.begin()->second.front();  // Récupérer le plus petit segment de la map
     float longueur = smallestSegment->longueur();
     // Troisième point du triangle équilatéral
@@ -570,18 +584,23 @@ vector<Triangle> Front::genererTriangle() {
         vector<Sommet> Tk_sommets;              // Sommets des triangles de Tk
         for (const auto& triangle : Tk) {
             for (const auto& sommet : triangle.sommets) {
-                Tk_sommets.push_back(*sommet);
+                // Vérifie si le sommet existe déjà dans Tk_sommets
+                auto it = find(Tk_sommets.begin(), Tk_sommets.end(), *sommet);
+                if (it == Tk_sommets.end()) {
+                    // Si le sommet n'est pas déjà présent, l'ajouter à Tk_sommets_uniques
+                    Tk_sommets.push_back(*sommet);
+                }
             }
-            sort(Tk_sommets.begin(), Tk_sommets.end());     // Supprimer les doublons dans Tk_sommets
-            Tk_sommets.erase(unique(Tk_sommets.begin(), Tk_sommets.end()), Tk_sommets.end());
         }
+
+
         // Supprimer de nouvTriangles les triangles Tk :
         for (const auto& triangle : Tk) {
             nouvTriangles.erase(remove(nouvTriangles.begin(), nouvTriangles.end(), triangle), nouvTriangles.end());
         }    
         // Créer les 4 triangles reliant pointk aux 4 sommets de Tk_sommets :
         int n = Tk_sommets.size() ;
-        for (size_t i = 0; i < n ; ++i) {
+        for (int i = 0; i < n ; ++i) {
             Triangle triangle(&Tk_sommets[i], &Tk_sommets[(i+1)%n], &pointk);
             nouvTriangles.push_back(triangle);
         }
@@ -599,7 +618,7 @@ vector<Triangle> Front::genererTriangle() {
     }
 
 
-
+/*
 
     // Si le super triangle est valide, le traiter selon les spécifications
     if (superTriangle.valide()) {
@@ -622,7 +641,7 @@ vector<Triangle> Front::genererTriangle() {
     }
 
 
-
+*/
 
 
 
