@@ -673,14 +673,14 @@ bool MaillageFront::MethodeFrontal(){
     for (const auto& pair : TheFront->segments) {
         const list<Segment*>& listeSegments = pair.second;
         for (Segment* segment : listeSegments) {
-            if(!(Final_Triangle->in_triangle(segment->sommets[0]))){
+            if(!(Final_Triangle->in_triangle(*(segment->sommets[0])))){
                 Final_Triangle->sommets[i_state] = segment->sommets[0];
                 i_state = i_state + 1;
                 if(*find(sommets.begin(), sommets.end(), segment->sommets[0] ) != segment->sommets[0]) {
                     sommets.push_back(segment->sommets[0]);
                 }
             }
-            if(!(Final_Triangle->in_triangle(segment->sommets[1]))){
+            if(!(Final_Triangle->in_triangle(*(segment->sommets[1])))){
                 Final_Triangle->sommets[i_state] = segment->sommets[1];
                 i_state = i_state + 1;
                 if(*find(sommets.begin(), sommets.end(), segment->sommets[1] ) != segment->sommets[1]) {

@@ -94,6 +94,7 @@ public:
     vector<Triangle> genererTriangle();                 // Méthode pour générer un nouveau triangle
     bool int_front(const Sommet Point);                 // Méthode pour vérifier si un point est dans le front
     int compteSegment();                                // Méthode pour compter le nombre de segments dans le front
+    bool empty() const {return segments.empty();}       // Méthode pour vérifier si le front est vide
 };
 
 //====================================================================================================
