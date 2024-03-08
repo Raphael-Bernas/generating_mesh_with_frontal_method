@@ -462,7 +462,7 @@ MaillageFront::MaillageFront(char modele, float Hpas): Triangulation() {
 bool MaillageFront::MethodeFrontal(){
     if (TheFront->empty()) {
         std::cerr << "Error: No Front To Proceed" << std::endl; 
-        return  false
+        return  false;
     }
     bool State = true;
     while (State) {
@@ -485,7 +485,7 @@ bool MaillageFront::MethodeFrontal(){
             }
         }
         if(TheFront->compteSegment() == 3){
-            state = false;
+            State = false;
         }
         if(TheFront->compteSegment() == 0){
             std::cerr << "Error: No Convergence of Frontal Method" << std::endl; 
@@ -495,7 +495,7 @@ bool MaillageFront::MethodeFrontal(){
     // Création du dernier triangle
     Triangle* Final_Triangle;
     int i_state = 0;
-    for (const auto& pair : front.segments) {
+    for (const auto& pair : TheFront->segments) {
         const list<Segment*>& listeSegments = pair.second;
         for (Segment* segment : listeSegments) {
             if(!(Final_Triangle->in_triangle(segment->sommets[0]))){
@@ -543,6 +543,17 @@ Front::Front(const Segment** Nsegments) {
         }
     }
 }
+int Front::compteSegment() {
+    int n_segment = 0;
+    // Parcours des segments dans l'objet Front
+    for (const auto& pair : segments) {
+        const list<const Segment*>& listeSegments = pair.second;
+        for (const Segment* segment : listeSegments) {
+            n_segment = n_segment + 1;
+        }
+    }
+    return n_segment;
+}
 void Front::ajouterSegment(const Segment* psegment) {     // Ajouter une arête au front
     // Rechercher de la liste correspondant à la taille de l'arête
     auto it = segments.find(psegment->longueur());
@@ -567,17 +578,6 @@ void Front::supprimerSegment(const Segment* segment) {    // Supprime une arête
             segments.erase(it);
         }
     }
-}
-int compteSegment() {
-    int n_segment = 0;
-    // Parcours des segments dans l'objet Front
-    for (const auto& pair : front.segments) {
-        const list<const Segment*>& listeSegments = pair.second;
-        for (const Segment* segment : listeSegments) {
-            n_segment = n_segment + 1;
-        }
-    }
-    return n_segment;
 }
 void Front::ajouterPoint(const Sommet& point) {     // Ajoute un point à la liste des points
     points.push_back(point);

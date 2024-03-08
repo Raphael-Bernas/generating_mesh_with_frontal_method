@@ -93,11 +93,8 @@ public:
     void supprimerPoint(const Sommet& point) ;          // Supprime un point de notre liste
     vector<Triangle> genererTriangle();                 // Méthode pour générer un nouveau triangle
     bool int_front(const Sommet Point);                 // Méthode pour vérifier si un point est dans le front
+    int compteSegment();                                // Méthode pour compter le nombre de segments dans le front
 };
-
-
-#endif  //maillage_HPP_INCLUDED
-
 
 //====================================================================================================
 //                              Classe Triangulation et ses dérivées
@@ -156,25 +153,5 @@ class MaillageFront : public Triangulation {
     MaillageFront(char modele, float Hpas) ;
     bool MethodeFrontal() ;
 };
-
-
-
-//====================================================================================================
-//                              Méthode Frontale et ses dérivées
-//====================================================================================================
-class Front {
-public:
-    map<double, list<const Segment*>> segments;     // Liste de liste d'arêtes triées par taille
-    vector<Sommet> points;                          // Liste des points utilisables pour générer des triangles
-
-    Front(const Segment** Nsegments, vector<Sommet> Npoints) ;      // Constructeur Front
-    void ajouterSegment(const Segment* psegment) ;      // Ajoute une arête au front
-    void supprimerSegment(const Segment* segment) ;     // Supprime une arête du front
-    int compteSegment() ;                               // Compte les segments
-    void ajouterPoint(const Sommet& point) ;            // Ajoute un point à la liste des points
-    void supprimerPoint(const Sommet& point) ;          // Supprime un point de notre liste
-    vector<Triangle> genererTriangle();                         // Méthode pour générer un nouveau triangle
-};
-
 
 #endif  //maillage_HPP_INCLUDED
