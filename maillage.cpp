@@ -536,8 +536,8 @@ vector<Triangle> Front::genererTriangle() {
     const Segment* smallestSegment = segments.begin()->second.front();  // Récupérer le plus petit segment de la map
     float longueur = smallestSegment->longueur();
     // Troisième point du triangle équilatéral
-    double x3 = smallestSegment->sommets[0]->x + (smallestSegment->sommets[1]->x - smallestSegment->sommets[0]->x) / 2.0 - (smallestSegment->sommets[1]->y - smallestSegment->sommets[0]->y) * (sqrt(3) / 2.0) ;
-    double y3 = smallestSegment->sommets[0]->y + (smallestSegment->sommets[1]->x - smallestSegment->sommets[0]->x) * (sqrt(3) / 2.0) - (smallestSegment->sommets[1]->y - smallestSegment->sommets[0]->y) / 2.0 ;
+    double x3 = (smallestSegment->sommets[1]->x + smallestSegment->sommets[0]->x) / 2.0 - (smallestSegment->sommets[1]->y - smallestSegment->sommets[0]->y) * (sqrt(3) / 2.0) ;
+    double y3 = (smallestSegment->sommets[1]->y + smallestSegment->sommets[0]->y) / 2.0 - (smallestSegment->sommets[1]->x - smallestSegment->sommets[0]->x) * (sqrt(3) / 2.0) ;
     Sommet thirdPoint(x3, y3);
     // Si un point est à une distance suffisamment proche, utiliser ce point comme troisième point du triangle
     for (const Sommet& point : points) {
@@ -592,8 +592,6 @@ vector<Triangle> Front::genererTriangle() {
                 }
             }
         }
-
-
         // Supprimer de nouvTriangles les triangles Tk :
         for (const auto& triangle : Tk) {
             nouvTriangles.erase(remove(nouvTriangles.begin(), nouvTriangles.end(), triangle), nouvTriangles.end());
