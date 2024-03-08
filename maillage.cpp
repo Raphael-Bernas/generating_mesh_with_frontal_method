@@ -671,8 +671,8 @@ bool MaillageFront::MethodeFrontal(){
     Triangle* Final_Triangle;
     int i_state = 0;
     for (const auto& pair : TheFront->segments) {
-        const list<Segment*>& listeSegments = pair.second;
-        for (Segment* segment : listeSegments) {
+        list<const Segment*> listeSegments = pair.second;
+        for (const Segment* segment : listeSegments) {
             if(!(Final_Triangle->in_triangle(*(segment->sommets[0])))){
                 Final_Triangle->sommets[i_state] = segment->sommets[0];
                 i_state = i_state + 1;
