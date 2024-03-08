@@ -67,11 +67,13 @@ int main() {
 
     // Création d'un front avec les segments de l'hexagone
     const Segment* segmentsHexagone[] = {&AB, &BC, &CD, &DE, &EF, &FA};
-    vector<Sommet> pointsInt;
-    Front front(segmentsHexagone, pointsInt);
+    cout << "OK1" << endl;
+    Front front(segmentsHexagone);
+    cout << "OK2" << endl;
 
     // Génération des triangles à partir du front hexagonal
     vector<Triangle> triangles = front.genererTriangle();
+    cout << "OK3" << endl;
 
     // Affichage des triangles générés
     cout << "Triangles generes a partir de l'hexagone :" << endl;

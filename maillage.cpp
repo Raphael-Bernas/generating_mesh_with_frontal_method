@@ -478,6 +478,14 @@ Front::Front(const Segment** Nsegments, vector<Sommet> Npoints) {
         ajouterPoint(Npoints[i]);
     }
 }
+Front::Front(const Segment** Nsegments) {
+    for (int i = 0; i < int(sizeof(Nsegments)); ++i) {
+        ajouterSegment(Nsegments[i]);
+        for (int j = 0; j < 2; ++j) {
+            ajouterPoint(*Nsegments[i]->sommets[j]);
+        }
+    }
+}
 void Front::ajouterSegment(const Segment* psegment) {     // Ajouter une arête au front
     // Rechercher de la liste correspondant à la taille de l'arête
     auto it = segments.find(psegment->longueur());
@@ -618,6 +626,6 @@ vector<Triangle> Front::genererTriangle() {
             ++it;
         }
     }
-    
+
     return nouvTriangles;
 }
