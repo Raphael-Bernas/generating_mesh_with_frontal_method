@@ -11,6 +11,7 @@ void Triangulation::save(){
     for (const auto& sommet : sommets) {
         fichier <<"S " ;                    // Empreinte sommet
         fichier <<sommet->x <<" " <<sommet->y <<" " ;   // Écriture des sommets
+        fichier <<"/n";
         }
     for (const auto& triangle : triangles) {    //ecriture des triangles
         fichier << "T " ;   // Empreinte triangles
@@ -19,11 +20,12 @@ void Triangulation::save(){
                 triangle->sommets[1] == sommets[i] ||
                 triangle->sommets[2] == sommets[i]) {
                     fichier <<i+1 <<" " ;  
+                    fichier <<"/n";
             }
         }
     }
-    fichier <<"F" << "\n" ;         // Fin d'une étape
-    fichier.close() ;
+    fichier <<"F"<<"\n";         // Fin d'une étape
+    fichier.close();
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -38,8 +40,9 @@ void Front::save(){
             // Ecriture des sommets des segments
             fichier <<segment->sommets[0]->x <<" " <<segment->sommets[0]->y <<" " ;
             fichier <<segment->sommets[1]->x <<" " <<segment->sommets[1]->y <<" " ;
+            fichier <<"/n";
         }
     }
-    fichier <<"F" << "\n" ;                 // Fin d'une étape
+    fichier <<"F"<<"\n";                 // Fin d'une étape
     fichier.close() ;
 }
