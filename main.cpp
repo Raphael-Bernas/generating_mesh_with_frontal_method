@@ -68,6 +68,17 @@ int main() {
     // Création d'un front avec les segments de l'hexagone
     const Segment* segmentsHexagone[] = {&AB, &BC, &CD, &DE, &EF, &FA};
     cout << "OK1" << endl;
+
+    int i = 0;
+    while (segmentsHexagone[i] != nullptr) {
+        cout << "iteration " << i << endl;
+        for (int j = 0; j < 2; ++j) {
+            cout << ((segmentsHexagone[i]->sommets[j])->x) << " , ";
+            cout << ((segmentsHexagone[i]->sommets[j])->y) << endl;
+        }
+        ++i;
+    }
+
     Front front(segmentsHexagone);
     cout << "OK2" << endl;
 

@@ -169,11 +169,18 @@ Front::Front(const Segment** Nsegments, vector<Sommet> Npoints) {
     }
 }
 Front::Front(const Segment** Nsegments) {
-    for (int i = 0; i < int(sizeof(Nsegments)); ++i) {
-        ajouterSegment(Nsegments[i]);
+    int i = 0;
+    const Segment** currentSegment = Nsegments;
+    while (*currentSegment != nullptr) {
+        cout << "iteration " << i << endl;
+        ajouterSegment(*currentSegment);
+        cout << "Segment" << i << " ajoute" << endl;
         for (int j = 0; j < 2; ++j) {
-            ajouterPoint(*Nsegments[i]->sommets[j]);
+            ajouterPoint(*(*currentSegment)->sommets[j]);
+            cout << "Point " << j << " ajoute" << endl;
         }
+        ++currentSegment;
+        ++i;
     }
 }
 int Front::compteSegment() {
