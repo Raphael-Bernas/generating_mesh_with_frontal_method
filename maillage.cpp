@@ -46,7 +46,7 @@ bool Triangle::in_triangle(const Sommet& point) const { // vérifie si un point 
     double dotBC = (C.x - B.x) * (point.y - B.y) - (C.y - B.y) * (point.x - B.x);
     double dotCA = (A.x - C.x) * (point.y - C.y) - (A.y - C.y) * (point.x - C.x);
 
-    return (dotAB >= 0 && dotBC >= 0 && dotCA >= 0) || (dotAB <= 0 && dotBC <= 0 && dotCA <= 0);
+    return (dotAB > 0 && dotBC > 0 && dotCA > 0) || (dotAB < 0 && dotBC < 0 && dotCA < 0);
 }
 Sommet Triangle::circumcenter() const {
     double x1 = sommets[0]->x;
@@ -168,11 +168,15 @@ Front::Front(const Segment** Nsegments, vector<Sommet> Npoints) {
         ajouterPoint(Npoints[i]);
     }
 }
-Front::Front(const Segment** Nsegments) {
-    for (int i = 0; i < int(sizeof(Nsegments)); ++i) {
+Front::Front(const Segment** Nsegments, int taille) {
+    for  (int i = 0; i < taille; ++i) {
+        // cout << "iteration " << i << endl;
         ajouterSegment(Nsegments[i]);
         for (int j = 0; j < 2; ++j) {
-            ajouterPoint(*Nsegments[i]->sommets[j]);
+            ajouterPoint(*(*Nsegments)->sommets[j]);
+            // cout << "Point (" << j << ") : " ;
+            // cout << ((Nsegments[i]->sommets[j])->x) << " , ";
+            // cout << ((Nsegments[i]->sommets[j])->y) << " ajoute" << endl;
         }
     }
 }
@@ -236,7 +240,7 @@ bool Front::int_front(const Sommet Point){
     return true;
 }
 vector<Triangle> Front::genererTriangle() { 
-    vector<Triangle> nouvTriangles ;                                    // Triangles de sortie
+    vector<Triangle> nouvTriangles ;    // Triangles de sortie
     if (segments.empty()) {
         cerr << "Erreur: Aucun segment disponible pour générer des triangles." << endl;
         return nouvTriangles;
@@ -245,18 +249,23 @@ vector<Triangle> Front::genererTriangle() {
     float longueur = smallestSegment->longueur();
     // Troisième point du triangle équilatéral
     double x3 = (smallestSegment->sommets[1]->x + smallestSegment->sommets[0]->x) / 2.0 - (smallestSegment->sommets[1]->y - smallestSegment->sommets[0]->y) * (sqrt(3) / 2.0) ;
-    double y3 = (smallestSegment->sommets[1]->y + smallestSegment->sommets[0]->y) / 2.0 - (smallestSegment->sommets[1]->x - smallestSegment->sommets[0]->x) * (sqrt(3) / 2.0) ;
-    Sommet thirdPoint(x3, y3);
+    double y3 = (smallestSegment->sommets[1]->y + smallestSegment->sommets[0]->y) / 2.0 + (smallestSegment->sommets[1]->x - smallestSegment->sommets[0]->x) * (sqrt(3) / 2.0) ;
+    double precision = 1e-14 ;
+    x3 = round(x3 / precision) * precision ; // Correction des erreurs epsilon machine
+    y3 = round(y3 / precision) * precision ;
+    Sommet* thirdPoint = new Sommet(x3, y3);
+    
     // Si un point est à une distance suffisamment proche, utiliser ce point comme troisième point du triangle
     for (const Sommet& point : points) {
         double distance = sqrt(pow(point.x - x3, 2) + pow(point.y - y3, 2));
         if (distance < longueur / 10.0) {
-            thirdPoint = point;
+            *thirdPoint = point;
             break;
         }
     }
+    cout << "thirdPoint = (" << thirdPoint->x << ", " << thirdPoint->y << ")" << endl;
     // Créer le super triangle de la méthode de Delaunay
-    Triangle superTriangle((smallestSegment->sommets)[0], (smallestSegment->sommets)[1], &(thirdPoint));
+    Triangle superTriangle((smallestSegment->sommets)[0], (smallestSegment->sommets)[1], thirdPoint);
     // (attention , il faudra redefinir quels sont les segments qui font partie du nouveau front
 
     // Algorithme de Bowyer-Watson :
@@ -265,6 +274,15 @@ vector<Triangle> Front::genererTriangle() {
     for (const Sommet& point : points) {
         if (superTriangle.in_triangle(point)) {
             points_int.push_back(point);
+        }
+    }
+    if (points_int.empty()) {
+        if (!int_front(*thirdPoint)) {  // Vérifier si le sommet est à l'intérieur du front
+            return nouvTriangles;
+        }
+        else {
+            nouvTriangles.push_back(superTriangle);
+            return nouvTriangles;
         }
     }
     // Créer trois triangles en reliant le premier point aux sommets du super triangle
