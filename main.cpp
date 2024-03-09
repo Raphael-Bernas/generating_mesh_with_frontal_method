@@ -49,43 +49,26 @@ int main() {
     // }
 
 //*************************************************************************************************************
-// Création des sommets pour former un hexagone
     Sommet A(0.0, 0.0);
     Sommet B(1.0, 0.0);
     Sommet C(1.5, sqrt(3) / 2.0);
     Sommet D(1.0, sqrt(3));
     Sommet E(0.0, sqrt(3));
     Sommet F(-0.5, sqrt(3) / 2.0);
-
-    // Création des segments pour l'hexagone
     Segment AB(&A, &B);
     Segment BC(&B, &C);
     Segment CD(&C, &D);
     Segment DE(&D, &E);
     Segment EF(&E, &F);
     Segment FA(&F, &A);
-
-    // Création d'un front avec les segments de l'hexagone
     const Segment* segmentsHexagone[] = {&AB, &BC, &CD, &DE, &EF, &FA};
-    cout << "OK1" << endl;
-
-    int i = 0;
-    while (segmentsHexagone[i] != nullptr) {
-        cout << "iteration " << i << endl;
-        for (int j = 0; j < 2; ++j) {
-            cout << ((segmentsHexagone[i]->sommets[j])->x) << " , ";
-            cout << ((segmentsHexagone[i]->sommets[j])->y) << endl;
-        }
-        ++i;
-    }
-
-    Front front(segmentsHexagone);
+    // cout << "OK1" << endl;
+    Front front(segmentsHexagone, 6);
     cout << "OK2" << endl;
 
     // Génération des triangles à partir du front hexagonal
     vector<Triangle> triangles = front.genererTriangle();
     cout << "OK3" << endl;
-
     // Affichage des triangles générés
     cout << "Triangles generes a partir de l'hexagone :" << endl;
     for (size_t i = 0; i < triangles.size(); ++i) {
