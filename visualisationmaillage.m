@@ -2,9 +2,9 @@ clear all ;
 
 %% Charger les donnees depuis les fichiers
 
-%data = dlmread('C:\Users\mayeu\Desktop\2A ENSTA x Master IPP\SIM202\maillage_regulier.txt') ;           % Cas non régulier
-%data = dlmread('C:\Users\mayeu\Desktop\2A ENSTA x Master IPP\SIM202\maillage_nonregulier.txt') ;        % Cas non régulier
-data = dlmread('C:\Users\mayeu\Desktop\2A ENSTA x Master IPP\SIM202\maillage_secteurangulaire.txt') ;   % Cas non régulier
+data = dlmread('C:\Users\mayeu\Desktop\2A ENSTA x Master IPP\SIM202\GitSIM202\SIM202\maillage_regulier.txt') ;           % Cas non régulier
+%data = dlmread('C:\Users\mayeu\Desktop\2A ENSTA x Master IPP\SIM202\GitSIM202\SIM202\maillage_nonregulier.txt') ;        % Cas non régulier
+%data = dlmread('C:\Users\mayeu\Desktop\2A ENSTA x Master IPP\SIM202\GitSIM202\SIM202\maillage_secteurangulaire.txt') ;   % Cas non régulier
 
 % Extraire les sommets et les triangles
 sommets = data(data(:, 1) == 0, 2:3) ;
