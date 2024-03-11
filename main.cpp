@@ -77,6 +77,7 @@ int main() {
         cout << "(" << triangles[i].sommets[1]->x << "," << triangles[i].sommets[1]->y << ") ";
         cout << "(" << triangles[i].sommets[2]->x << "," << triangles[i].sommets[2]->y << ")" << endl;
     }
+//*************************************************************************************************************
 
     return 0;
 }

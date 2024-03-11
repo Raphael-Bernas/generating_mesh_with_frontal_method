@@ -11,6 +11,7 @@ void Triangulation::save(){
     for (const auto& sommet : sommets) {
         fichier <<"S " ;                    // Empreinte sommet
         fichier <<sommet->x <<" " <<sommet->y <<" " ;   // Écriture des sommets
+        fichier <<"/n";
         }
     for (const auto& triangle : triangles) {    //ecriture des triangles
         fichier << "T " ;   // Empreinte triangles
@@ -19,11 +20,12 @@ void Triangulation::save(){
                 triangle->sommets[1] == sommets[i] ||
                 triangle->sommets[2] == sommets[i]) {
                     fichier <<i+1 <<" " ;  
+                    fichier <<"/n";
             }
         }
     }
-    fichier <<"F" << "\n" ;         // Fin d'une étape
-    fichier.close() ;
+    fichier <<"F"<<"\n";         // Fin d'une étape
+    fichier.close();
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -33,14 +35,14 @@ void Triangulation::save(){
 void Front::save(){
     ofstream fichier("historique_F.txt");   // Fichier mémoire
     for (const auto& pair : segments) {
-    // Parcours des segments dans l'objet Front
+    // Parcours des aretes dans l'objet Front
         for (const auto& segment : pair.second) {
             // Ecriture des sommets des segments
-            fichier <<"A " ;                     // Empreinte arete (ou plutôt segment ici)
             fichier <<segment->sommets[0]->x <<" " <<segment->sommets[0]->y <<" " ;
             fichier <<segment->sommets[1]->x <<" " <<segment->sommets[1]->y <<" " ;
+            fichier <<"/n";
         }
     }
-    fichier <<"F" << "\n" ;                 // Fin d'une étape
+    fichier <<"F"<<"\n";                 // Fin d'une étape
     fichier.close() ;
 }
