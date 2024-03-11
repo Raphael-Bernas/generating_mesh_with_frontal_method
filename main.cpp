@@ -6,6 +6,7 @@
 #include <cmath>        // Fonctions cos, sin, etc
 #include <cstdlib>      // Fonction rand
 #include <fstream>      // Lecture/écriture de fichiers
+#include <random>       // Inclusion de l'en-tête pour std::mt19937
 #include <ctime>        // Fonction time (utile pour rand)
 #include <algorithm>    // Algorithmes génériques de la bibliothèque standard, comme std::find
 
@@ -90,6 +91,24 @@ int main() {
     cout << "Nouveau front apres la deuxieme occurence : " << endl;
     front.print();
 //*************************************************************************************************************
+    // Génération d'un front polygonal de n côtés
+    Front thefront;
+    thefront.polygone_random(6); // Par exemple, un hexagone
+
+    // Division du front en segments plus petits
+    front.Divise_Front(0.5);
+
+    // Création du maillage frontal à partir du front
+    MaillageFront maillageFront(&thefront);
+
+    // Application de la méthode frontal
+    if (!maillageFront.MethodeFrontal()) {
+        std::cerr << "Error: Failed to apply frontal method" << std::endl;
+        return 1;
+    }
+
+    // Réussite de l'application de la méthode frontal
+    std::cout << "Frontal method applied successfully!" << std::endl;
 
     return 0;
 }

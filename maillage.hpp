@@ -9,6 +9,7 @@
 #include <cmath>        // Fonctions cos, sin, etc
 #include <cstdlib>      // Fonction rand
 #include <fstream>      // Lecture/écriture de fichiers
+#include <random>       // Inclusion de l'en-tête pour std::mt19937
 #include <ctime>        // Fonction time (utile pour rand)
 #include <algorithm>    // Algorithmes génériques de la bibliothèque standard, comme std::find
 
@@ -65,6 +66,8 @@ class Segment {
     double operator,(const Segment& autre) ;        // Produit scalaire
     bool operator|(const Segment& autre) const ;
     bool operator<(const Segment& autre) const;
+    // Fonction pour interpoler un point le long du segment
+    Sommet pointInterpolation(double t) const;
 };
 class Domaine {
 public:
@@ -87,6 +90,7 @@ public:
     map<double, list<const Segment*>> segments;     // Liste de liste d'arêtes triées par taille
     vector<Sommet> points;                          // Liste des points utilisables pour générer des triangles
 
+    Front() {}; // Constructeur vide
     Front(const Segment** Nsegments, vector<Sommet> Npoints) ;      // Constructeur Front
     Front(const Segment** Nsegments, int taille) ;                  // Constructeur Front
     void ajouterSegment(const Segment* psegment) ;      // Ajoute une arête au front
@@ -95,6 +99,8 @@ public:
     void supprimerPoint(const Sommet& point) ;          // Supprime un point de notre liste
     vector<Triangle> genererTriangle();                 // Générer un nouveau triangle
     bool int_front(const Sommet Point);                 // Vérifier si un point est dans le front
+    void Divise_Front(double h);                        // Divise le front selon un pas h donnée
+    void polygone_random(int n);                        // Génère un front random polygonal de n côté
     int compteSegment();                                // Compter le nombre de segments dans le front
     bool empty() const {return segments.empty();}       // Vérifier si le front est vide
     void save();                                        // Sauvegarder le front
@@ -155,6 +161,7 @@ public:
     void genererSecteurAngulaire() ;
 };
 class MaillageFront : public Triangulation {
+public:
     Front* TheFront ;
     MaillageFront(Front* AFront) ;
     MaillageFront(char modele, float Hpas) ;

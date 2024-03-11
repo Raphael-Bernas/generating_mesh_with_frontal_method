@@ -8,6 +8,7 @@
 #include <cmath>        // Fonctions cos, sin, etc
 #include <cstdlib>      // Fonction rand
 #include <fstream>      // Lecture/écriture de fichiers
+#include <random>       // Inclusion de l'en-tête pour std::mt19937
 #include <ctime>        // Fonction time (utile pour rand)
 #include <algorithm>    // Algorithmes génériques de la bibliothèque standard, comme std::find
 
@@ -142,6 +143,12 @@ bool Segment::operator<(const Segment& autre) const{
 }
 double Segment::operator,(const Segment& autre) {        // Produit scalaire
     return((sommets[1]->x - sommets[0]->x)*(autre.sommets[1]->x - autre.sommets[0]->x) + (sommets[1]->y - sommets[0]->y)*(autre.sommets[1]->y - autre.sommets[0]->y));
+}
+// Fonction pour interpoler un point le long du segment
+Sommet Segment::pointInterpolation(double t) const {
+        double newX = sommets[0]->x + t * (sommets[1]->x - sommets[0]->x);
+        double newY = sommets[0]->y + t * (sommets[1]->y - sommets[0]->y);
+        return Sommet(newX, newY);
 }
 //====================================================================================================
 bool Domaine::operator==(const Domaine& autre) const {       // Surcharge de l'opérateur ==
@@ -311,6 +318,94 @@ const Segment* Front::miseajour(const Segment* seginit){
         }
     }
     return segment_a_garder ;
+}
+void Front::Divise_Front(double h) {
+    // Parcours des segments dans le front
+    for (auto it = segments.begin(); it != segments.end(); ++it) {
+        list<const Segment*> listeSegments = it->second;
+        for (const Segment* grandSegment : listeSegments) {
+            // Calcul de la longueur du segment
+            double longueurSegment = grandSegment->longueur();
+            
+            // Calcul du nombre de segments à générer
+            int nbSegments = static_cast<int>(std::round(longueurSegment / h));
+            if (nbSegments < 2) {
+                continue; // Pas besoin de diviser le segment s'il est trop court
+            }
+            
+            // Création de la liste de sommets
+            list<Sommet*> nouveauxSommets;
+            for (int i = 0; i < nbSegments + 1; ++i) {
+                double t = static_cast<double>(i) / nbSegments;
+                Sommet nouveauPoint = grandSegment->pointInterpolation(t);
+                Sommet* nouveauSommet = new Sommet(nouveauPoint.x, nouveauPoint.y);
+                nouveauxSommets.push_back(nouveauSommet);
+            }
+            
+            // Création et ajout des nouveaux segments
+            auto itSommet = nouveauxSommets.begin();
+            for (int i = 0; i < nbSegments; ++i) {
+                Segment* petitSegment = new Segment(*itSommet, *(std::next(itSommet)));
+                ajouterSegment(petitSegment);
+                ++itSommet;
+            }
+            
+            // Suppression du grand segment du front
+            supprimerSegment(grandSegment);
+            
+            // Ajout des nouveaux sommets au front
+            for (Sommet* nouveauSommet : nouveauxSommets) {
+                ajouterPoint(*nouveauSommet);
+            }
+        }
+    }
+}
+
+void Front::polygone_random(int n) {
+    // Initialisation du générateur de nombres aléatoires
+    std::mt19937 rng(std::time(nullptr));
+    std::uniform_real_distribution<double> distribution(0.0, 10.0);
+
+    // Générer les sommets aléatoires pour le polygone
+    int i = 0;
+    while (i < n) {
+        double x = distribution(rng); // Coordonnée x aléatoire
+        double y = distribution(rng); // Coordonnée y aléatoire
+        const Sommet* sommet = new Sommet(x, y); // Créer un nouveau sommet
+
+        // Si c'est le deuxième sommet ou plus
+        if (i >= 1) {
+            const Sommet* sommetPrecedent = &points[i - 1];
+            const Segment* segment = new Segment(const_cast<Sommet*>(sommetPrecedent), const_cast<Sommet*>(sommet)); // Créer le segment
+
+            // Vérifier s'il croise un des segments précédents
+            bool intersection = false;
+            for (auto it = segments.begin(); it != segments.end(); ++it) {
+                list<const Segment*> listeSegments = it->second;
+                for (const Segment* existingSegment : listeSegments) {
+                    if ((*segment)|(*existingSegment)) {
+                        intersection = true;
+                        break;
+                    }
+                }
+            }
+
+            // Si aucun croisement n'est détecté, ajouter le segment à la triangulation
+            if (!intersection) {
+                ajouterSegment(segment); // Ajouter le segment à la triangulation
+                ajouterPoint(*sommet); // Ajouter le sommet à la liste des sommets
+                i = i + 1;
+            } else {
+                delete segment; // Supprimer le segment en cas de croisement
+            }
+        }
+    }
+
+    // Relier le dernier sommet avec le premier pour fermer le polygone
+    const Sommet* sommetDernier = &points.back();
+    const Sommet* premierSommet = &points.front();
+    const Segment* dernierSegment = new Segment(const_cast<Sommet*>(sommetDernier), const_cast<Sommet*>(premierSommet)); // Créer le dernier segment
+    ajouterSegment(dernierSegment); // Ajouter le dernier segment à la triangulation
 }
 void Front::print() {
     for (const auto& pair : segments) {
