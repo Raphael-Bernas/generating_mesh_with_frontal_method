@@ -6,16 +6,16 @@ front_evol = dlmread('historique_F.txt') ;
 
 itm=1
 itf=1
+sommets = [];
+triangles=[];
 % Parcourir la matrice maillage_evol
-while i <=size(data, 1)
-    sommets = [];
-    triangles=[];
+while itm <=size(maillage_evol, 1)
     % Vérifier si la première lettre de la première colonne est "S"
     if maillage_evol(i, 1) == 'S'
         % Ajouter les valeurs des colonnes 2 et 3 à donnees_filtrees
-        sommets = [sommets; data(i, 2:3)];
+        sommets = [sommets; maillage_evol(i, 2:3)];
     elseif maillage_evol(i, 1) == 'T'
-        triangles = [triangles; data(i, 2:4)];
+        triangles = [triangles; maillage_evol(i, 2:4)];
     elif maillage_evol(i, 1) == 'F'
         itm=i+1; %pour reprendre la prochaine fois à partir du 'F'
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -29,9 +29,10 @@ while i <=size(data, 1)
         title('Maillage') ;
         axis equal ;
         axis tight;
+        sommets = [];
+        triangles=[];
         % Parcourir la matrice front_evol
-        for i = it:size(front_evol, 1)
-             sommets = [];
+        while itf <= size(fron_evol, 1)
             % Vérifier si la première lettre de la première colonne est "F"
             if front_evol(i, 1) == 'F'
                 itf=i+1; %pour reprendre la prochaine fois à partir du 'F'
@@ -40,9 +41,10 @@ while i <=size(data, 1)
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 hold on;
                 scatter(sommets(:, 1), sommets(:, 2), 'b');
+                sommets = [];
                 pause(1);
                 else
-                sommets = [sommets; data(i, 2:3)];
+                sommets = [sommets; front_evol(i, 2:3)];
             end
         end
 
