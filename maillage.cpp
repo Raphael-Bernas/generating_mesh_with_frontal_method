@@ -650,6 +650,7 @@ void MaillageSecteurAngulaire::genererSecteurAngulaire() {
 MaillageFront::MaillageFront(Front* AFront) : Triangulation(), TheFront(AFront) {}
 MaillageFront::MaillageFront(char modele, float Hpas): Triangulation() {
     // Remplir le Front en fonction de différent modèle
+    // Polygone hasard :
 }
 bool MaillageFront::MethodeFrontal(){
     if (TheFront->empty()) {
