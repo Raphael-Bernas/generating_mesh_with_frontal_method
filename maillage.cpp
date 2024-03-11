@@ -297,7 +297,7 @@ void Front::miseajour(const Segment* seginit){
             ++it;
         }
     }
-    // Suupprimer les aller-retours de segments dans le front
+    // Supprimer les aller-retours de segments dans le front
     // C'est à dire les doublets de segments qui ont le même longueur et qui ont pour sommets[0] et sommets[1] inversés
     for (auto it = segments.begin(); it != segments.end(); ++it) {
         for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
@@ -308,6 +308,21 @@ void Front::miseajour(const Segment* seginit){
                     break;
                 }
             }
+        }
+    }
+    // Supprimer les segments dont les coordonnées des extrémités ne sont pas dans points
+    for (auto it = segments.begin(); it != segments.end();) {
+        for (auto it2 = it->second.begin(); it2 != it->second.end();) {
+            if (find(points.begin(), points.end(), *((*it2)->sommets[0])) == points.end() || find(points.begin(), points.end(), *((*it2)->sommets[1])) == points.end()) {
+                it2 = it->second.erase(it2);
+            } else {
+                ++it2;
+            }
+        }
+        if (it->second.empty()) {
+            it = segments.erase(it);
+        } else {
+            ++it;
         }
     }
 }
@@ -363,12 +378,13 @@ vector<Triangle> Front::genererTriangle() {
         }
         else {
             nouvTriangles.push_back(superTriangle);
-            cout << "Super triangle ajouté." << endl;
             // Ajouter les segments du super triangle au front
             Segment* seg1 = new Segment((smallestSegment->sommets)[0], thirdPoint);
             Segment* seg2 = new Segment(thirdPoint, (smallestSegment->sommets)[1]);
             ajouterSegment(seg1);
             ajouterSegment(seg2);
+            // Ajouter le troisième point du super triangle à la liste de points
+            ajouterPoint(*thirdPoint);
             miseajour(seg1);
             return nouvTriangles;
         }
@@ -432,7 +448,7 @@ vector<Triangle> Front::genererTriangle() {
             ++it;
         }
     }
-
+    // Appliquer miseajour aux segments depuis smallestSegment jusqu'au segment dont sommet[1] est smallestSegment->sommets[1]
     return nouvTriangles;
 }
 
