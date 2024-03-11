@@ -91,12 +91,44 @@ int main() {
     cout << "Nouveau front apres la deuxieme occurence : " << endl;
     front.print();
 //*************************************************************************************************************
+// Test de segments se croisant
+    Sommet A_b(1, 1);
+    Sommet B_b(4, 4);
+    Sommet C_b(1, 4);
+    Sommet D_b(4, 1);
+
+    const Segment s1(&A_b, &B_b);
+    const Segment s2(&C_b, &D_b);
+
+    if (s1.segmentsSeCroisent(&s2)) {
+        std::cout << "Test réussi : Les segments se croisent." << std::endl;
+    } else {
+        std::cout << "Test échoué : Les segments ne se croisent pas." << std::endl;
+    }
+
+    // Test de segments ne se croisant pas
+    Sommet E_b(1, 1);
+    Sommet F_b(2, 2);
+    Sommet G_b(5, 5);
+    Sommet H_b(6, 6);
+
+    const Segment s3(&E_b, &F_b);
+    const Segment s4(&G_b, &H_b);
+
+    if (!s3.segmentsSeCroisent(&s4)) {
+        std::cout << "Test réussi : Les segments ne se croisent pas." << std::endl;
+    } else {
+        std::cout << "Test échoué : Les segments se croisent." << std::endl;
+    }
+//*************************************************************************************************************
     // Génération d'un front polygonal de n côtés
     Front thefront;
-    thefront.polygone_random(6); // Par exemple, un hexagone
+    thefront.polygone_regulier(6); // Ici, un hexagone
+    std::cout << "Polygone created successfully!" << std::endl;
 
     // Division du front en segments plus petits
     front.Divise_Front(0.5);
+    std::cout << "Front divided successfully!" << std::endl;
 
     // Création du maillage frontal à partir du front
     MaillageFront maillageFront(&thefront);

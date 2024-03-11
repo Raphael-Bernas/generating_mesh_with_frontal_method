@@ -68,6 +68,7 @@ class Segment {
     bool operator<(const Segment& autre) const;
     // Fonction pour interpoler un point le long du segment
     Sommet pointInterpolation(double t) const;
+    bool segmentsSeCroisent(const Segment* s) const ;
 };
 class Domaine {
 public:
@@ -100,6 +101,7 @@ public:
     vector<Triangle> genererTriangle();                 // Générer un nouveau triangle
     bool int_front(const Sommet Point);                 // Vérifier si un point est dans le front
     void Divise_Front(double h);                        // Divise le front selon un pas h donnée
+    void polygone_regulier(int n);                      // Génère un front régulier polygonal de n côté
     void polygone_random(int n);                        // Génère un front random polygonal de n côté
     int compteSegment();                                // Compter le nombre de segments dans le front
     bool empty() const {return segments.empty();}       // Vérifier si le front est vide
