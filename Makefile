@@ -6,10 +6,10 @@ OBJS = $(SRCS:.cpp=.o)
 EXEC = main
 
 $(EXEC): $(OBJS)
-    $(CC) $(CFLAGS) -o $(EXEC) $(OBJS)
+	$(CC) $(CFLAGS) -o $(EXEC) $(OBJS)
 
 %.o: %.cpp
-    $(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-    rm -f $(EXEC) $(OBJS)
+	rm -f $(EXEC) $(OBJS)
