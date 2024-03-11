@@ -66,9 +66,20 @@ int main() {
     Front front(segmentsHexagone, 6);
     front.print();
     
+    cout << "OK1" << endl;
     // Génération des triangles à partir du front hexagonal
     vector<Triangle> triangles = front.genererTriangle();
-
+    // Affichage des triangles générés
+    for (size_t i = 0; i < triangles.size(); ++i) {
+        cout << "Triangle " << i+1 << ": ";
+        cout << "(" << triangles[i].sommets[0]->x << "," << triangles[i].sommets[0]->y << ") ";
+        cout << "(" << triangles[i].sommets[1]->x << "," << triangles[i].sommets[1]->y << ") ";
+        cout << "(" << triangles[i].sommets[2]->x << "," << triangles[i].sommets[2]->y << ")" << endl;
+    }
+    front.print();
+    cout << "OK2" << endl;
+    // Génération des triangles à partir du front hexagonal
+    triangles = front.genererTriangle();
     // Affichage des triangles générés
     for (size_t i = 0; i < triangles.size(); ++i) {
         cout << "Triangle " << i+1 << ": ";

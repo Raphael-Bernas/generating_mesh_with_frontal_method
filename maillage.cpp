@@ -238,14 +238,14 @@ bool Front::int_front(const Sommet Point){
     // on vérifie si le triplet (premier point du segment, deuxième point du segment, point considéré) est orienté dans le sens direct)
     for (auto it = segments.begin(); it != segments.end(); ++it) {
         for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
-            if ( ((*it2)->sommets[1]->x - (*it2)->sommets[0]->x)*(Point.y - (*it2)->sommets[0]->y) - ((*it2)->sommets[1]->y - (*it2)->sommets[0]->y)*(Point.x - (*it2)->sommets[0]->x) <= 0) {
+            if ( ((*it2)->sommets[1]->x - (*it2)->sommets[0]->x)*(Point.y - (*it2)->sommets[0]->y) - ((*it2)->sommets[1]->y - (*it2)->sommets[0]->y)*(Point.x - (*it2)->sommets[0]->x) < 0) {
                 return false;
             }
         }
     }
     return true;
 }
-void Front::miseajour(Segment* seginit){
+void Front::miseajour(const Segment* seginit){
     // Parcourir les segments du front pour trouver le segment précédant seginit (dans le sens trigo)
     // C'est à dire le segment qui a pour sommets[1] le sommet[0] de smallestSegment
     const Segment* segprec ;
@@ -338,17 +338,18 @@ vector<Triangle> Front::genererTriangle() {
     if (points_int.empty()) {
         if (!int_front(*thirdPoint)) {  // Vérifier si le sommet est à l'intérieur du front
         // Déterminer ce que l'on fait dans ce cas
+            cout << "hey" << endl;
             return nouvTriangles;
         }
         else {
             nouvTriangles.push_back(superTriangle);
+            cout << "Super triangle ajouté." << endl;
             // Ajouter les segments du super triangle au front
             Segment* seg1 = new Segment((smallestSegment->sommets)[0], thirdPoint);
             Segment* seg2 = new Segment(thirdPoint, (smallestSegment->sommets)[1]);
             ajouterSegment(seg1);
             ajouterSegment(seg2);
             miseajour(seg1);
-            
             return nouvTriangles;
         }
     }
