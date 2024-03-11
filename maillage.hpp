@@ -61,6 +61,8 @@ class Segment {
     
     Segment(Sommet* s1, Sommet* s2);
     float longueur() const;
+    bool operator==(const Segment& autre) const ;
+    double operator,(const Segment& autre) ;        // Produit scalaire
     bool operator|(const Segment& autre) const ;
     bool operator<(const Segment& autre) const;
 };
@@ -91,11 +93,12 @@ public:
     void supprimerSegment(const Segment* segment) ;     // Supprime une arête du front
     void ajouterPoint(const Sommet& point) ;            // Ajoute un point à la liste des points
     void supprimerPoint(const Sommet& point) ;          // Supprime un point de notre liste
-    vector<Triangle> genererTriangle();                 // Méthode pour générer un nouveau triangle
-    bool int_front(const Sommet Point);                 // Méthode pour vérifier si un point est dans le front
-    int compteSegment();                                // Méthode pour compter le nombre de segments dans le front
-    bool empty() const {return segments.empty();}       // Méthode pour vérifier si le front est vide
-    void save();                                        // Méthode pour sauvegarder le front
+    vector<Triangle> genererTriangle();                 // Générer un nouveau triangle
+    bool int_front(const Sommet Point);                 // Vérifier si un point est dans le front
+    int compteSegment();                                // Compter le nombre de segments dans le front
+    bool empty() const {return segments.empty();}       // Vérifier si le front est vide
+    void save();                                        // Sauvegarder le front
+    void miseajourfront();                              // Mettre à jour le front : supprimer les segments devenus inutiles
 };
 
 //====================================================================================================

@@ -125,6 +125,9 @@ Segment::Segment(Sommet* s1, Sommet* s2){ // Constructeur du segment
 float Segment::longueur() const{
     return(sqrt((sommets[1]->y - sommets[0]->y)*(sommets[1]->y - sommets[0]->y) + (sommets[1]->x - sommets[0]->x)*(sommets[1]->x - sommets[0]->x)));
 }
+bool Segment::operator==(const Segment& autre) const {      // Surcharge de l'opérateur ==
+    return (sommets[0]->x == autre.sommets[0]->x && sommets[0]->y == autre.sommets[0]->y && sommets[1]->x == autre.sommets[1]->x && sommets[1]->y == autre.sommets[1]->y ) ;
+}
 bool Segment::operator|(const Segment& autre) const {
     Sommet* A = autre.sommets[0] ;
     Sommet* B = autre.sommets[1] ;
@@ -136,6 +139,9 @@ bool Segment::operator<(const Segment& autre) const{
     double taille = this->longueur();
     double autre_taille = autre.longueur();
     return taille < autre_taille;
+}
+double Segment::operator,(const Segment& autre) {        // Produit scalaire
+    return((sommets[1]->x - sommets[0]->x)*(autre.sommets[1]->x - autre.sommets[0]->x) + (sommets[1]->y - sommets[0]->y)*(autre.sommets[1]->y - autre.sommets[0]->y));
 }
 //====================================================================================================
 bool Domaine::operator==(const Domaine& autre) const {       // Surcharge de l'opérateur ==
@@ -239,6 +245,46 @@ bool Front::int_front(const Sommet Point){
     }
     return true;
 }
+void Front::miseajourfront() {
+    // Parcourir les segments du front pour en trouver deux qui ont le même point de départ sommets[0]
+    for (auto it = segments.begin(); it != segments.end(); ++it) {
+        for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
+            Sommet* pointdouble = (*it2)->sommets[0];
+            for (auto it3 = it2; it3 != it->second.end(); ++it3) {
+                if (*pointdouble == *((*it3)->sommets[0])) {
+                    // Si deux segments ont le même point de départ, on recherche un segment qui a pointdouble pour point d'arrivée sommets[1]
+                    const Segment * segprec ;
+                    for (auto it4 = segments.begin(); it4 != segments.end(); ++it4) {
+                        for (auto it5 = it4->second.begin(); it5 != it4->second.end(); ++it5) {
+                            if (*((*it5)->sommets[1]) == *pointdouble) {
+                                segprec = *it5 ;
+                                break;
+                            }
+                        }
+                    }
+                    // Calculs de produits scalaires permettant d'établir lequel des deux segments forme
+                    // le plus petit angle avec segprec dans le sens direct
+                    double xsegprec = segprec->sommets[0]->x - pointdouble->x ;
+                    double ysegprec = segprec->sommets[0]->y - pointdouble->y ;
+                    double xit2 = (*it2)->sommets[1]->x - pointdouble->x ;
+                    double yit2 = (*it2)->sommets[1]->y - pointdouble->y ;
+                    double xit3 = (*it3)->sommets[1]->x - pointdouble->x ;
+                    double yit3 = (*it3)->sommets[1]->y - pointdouble->y ;
+                    double prodscalit2 = xsegprec*xit2 + ysegprec*yit2 ;
+                    double prodscalit3 = xsegprec*xit3 + ysegprec*yit3 ;
+                    double angleit2 = acos(prodscalit2/(sqrt(xsegprec*xsegprec + ysegprec*ysegprec) * sqrt(xit2*xit2 + yit2*yit2))) ;
+                    double angleit3 = acos(prodscalit3/(sqrt(xsegprec*xsegprec + ysegprec*ysegprec) * sqrt(xit3*xit3 + yit3*yit3))) ;
+                    // Suppression du segment formant le plus petit angle avec segprec dans le sens direct
+                    if (angleit2 < angleit3) {
+                        supprimerSegment(*it2);
+                    } else {
+                        supprimerSegment(*it3);
+                    }
+                }
+            }
+        }
+    }
+}
 vector<Triangle> Front::genererTriangle() { 
     vector<Triangle> nouvTriangles ;    // Triangles de sortie
     if (segments.empty()) {
@@ -282,6 +328,15 @@ vector<Triangle> Front::genererTriangle() {
         }
         else {
             nouvTriangles.push_back(superTriangle);
+            // Ajouter les segments du super triangle au front
+            Segment* seg1 = new Segment((smallestSegment->sommets)[0], thirdPoint);
+            Segment* seg2 = new Segment(thirdPoint, (smallestSegment->sommets)[1]);
+            ajouterSegment(seg1);
+            ajouterSegment(seg2);
+            // Supprimer du Front courant le segment qui a servi à générer le super triangle
+            supprimerSegment(smallestSegment);
+            miseajourfront();
+
             return nouvTriangles;
         }
     }
