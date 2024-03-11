@@ -915,15 +915,17 @@ bool MaillageFront::MethodeFrontal(){
         return  false;
     }
     bool State = true;
+    std::cout << "Initialisation successfull !" << std::endl;
     while (State) {
         // Appliquer GenererTriangle
         vector<Triangle> FrontCalc = TheFront->genererTriangle();
         TheFront->save();
         for(int i = 0; i < int(sizeof(FrontCalc)); ++i){
             Triangle* New_Triangle = &FrontCalc[i];
-            Sommet* New_Sommet1 = New_Triangle->sommets[1];
-            Sommet* New_Sommet2 = New_Triangle->sommets[2];
-            Sommet* New_Sommet3 = New_Triangle->sommets[3];
+            Sommet* New_Sommet1 = New_Triangle->sommets[0];
+            Sommet* New_Sommet2 = New_Triangle->sommets[1];
+            Sommet* New_Sommet3 = New_Triangle->sommets[2];
+            std::cout << "test final" << std::endl;
             triangles.push_back(New_Triangle);
             if(*find(sommets.begin(), sommets.end(), New_Sommet1 ) != New_Sommet1) {
                 sommets.push_back(New_Sommet1);
