@@ -245,7 +245,7 @@ bool Front::int_front(const Sommet Point){
     }
     return true;
 }
-void Front::miseajour(const Segment* seginit){
+const Segment* Front::miseajour(const Segment* seginit){
     // Parcourir les segments du front pour trouver le segment précédant seginit (dans le sens trigo)
     // C'est à dire le segment qui a pour sommets[1] le sommet[0] de smallestSegment
     const Segment* segprec ;
@@ -310,6 +310,7 @@ void Front::miseajour(const Segment* seginit){
             }
         }
     }
+    return segment_a_garder ;
 }
 void Front::print() {
     for (const auto& pair : segments) {
@@ -356,14 +357,84 @@ vector<Triangle> Front::genererTriangle() {
             points_int.push_back(point);
         }
     }
-    if (points_int.empty()) {
-        if (!int_front(*thirdPoint)) {  // Vérifier si le sommet est à l'intérieur du front
+    if (!int_front(*thirdPoint)) {  // Vérifier si le sommet est à l'intérieur du front
         // Déterminer ce que l'on fait dans ce cas
             return nouvTriangles;
+    }
+    else {
+        if (points_int.empty()) {
+            nouvTriangles.push_back(superTriangle);
+            // Ajouter les segments du super triangle au front
+            Segment* seg1 = new Segment((smallestSegment->sommets)[0], thirdPoint);
+            Segment* seg2 = new Segment(thirdPoint, (smallestSegment->sommets)[1]);
+            ajouterSegment(seg1);
+            ajouterSegment(seg2);
+            // Ajouter le troisième point du super triangle à la liste de points
+            ajouterPoint(*thirdPoint);
+            miseajour(seg1);
+            return nouvTriangles;        
         }
         else {
             nouvTriangles.push_back(superTriangle);
-            // Ajouter les segments du super triangle au front
+            // Créer trois triangles en reliant le premier point aux sommets du super triangle
+            Triangle triangle1((superTriangle.sommets)[0], (superTriangle.sommets)[1], &(points_int.front()));
+            Triangle triangle2((superTriangle.sommets)[1], (superTriangle.sommets)[2], &(points_int.front()));
+            Triangle triangle3((superTriangle.sommets)[2], (superTriangle.sommets)[0], &(points_int.front()));
+            // Ajouter ces triangles à la liste de triangles de sortie
+            nouvTriangles.push_back(triangle1);
+            nouvTriangles.push_back(triangle2);
+            nouvTriangles.push_back(triangle3);
+            // Supprimer le premier point de la liste intérieure
+            points_int.erase(points_int.begin());
+
+            for (Sommet& pointk : points_int) {     // Parcourt des points intérieurs au super triangle
+                // Triangles dont les cercles circonscrits contiennent pointk
+                vector<Triangle> Tk ;
+                for (auto it = nouvTriangles.begin(); it != nouvTriangles.end(); ++it) {
+                    if ((*it).in_circle_triangle(pointk)) {
+                        Tk.push_back(*it) ;
+                        if (Tk.size() == 2) {
+                            break;
+                        }
+                    }
+                }
+                vector<Sommet> Tk_sommets;              // Sommets des triangles de Tk
+                for (const auto& triangle : Tk) {
+                    for (const auto& sommet : triangle.sommets) {
+                        // Vérifie si le sommet existe déjà dans Tk_sommets
+                        auto it = find(Tk_sommets.begin(), Tk_sommets.end(), *sommet);
+                        if (it == Tk_sommets.end()) {
+                            // Si le sommet n'est pas déjà présent, l'ajouter à Tk_sommets_uniques
+                            Tk_sommets.push_back(*sommet);
+                        }
+                    }
+                }
+                // Supprimer de nouvTriangles les triangles Tk :
+                for (Triangle& triangle : Tk) {
+                    nouvTriangles.erase(remove(nouvTriangles.begin(), nouvTriangles.end(), triangle), nouvTriangles.end());
+                }    
+                // Créer les 4 triangles reliant pointk aux 4 sommets de Tk_sommets :
+                int n = Tk_sommets.size() ;
+                for (int i = 0; i < n ; ++i) {
+                    Triangle triangle(&Tk_sommets[i], &Tk_sommets[(i+1)%n], &pointk);
+                    nouvTriangles.push_back(triangle);
+                }
+            }
+            for (auto it = nouvTriangles.begin(); it != nouvTriangles.end();) {
+                Triangle& triangle = *it;
+                bool removeTriangle = false;
+                for (Sommet* sommet : triangle.sommets) {
+                    if (!int_front(*sommet)) {  // Vérifier si le sommet est à l'intérieur du front
+                        removeTriangle = true;
+                        break;
+                    }
+                }
+                if (removeTriangle) {   // Supprimer le triangle si un de ses sommets n'est pas à l'intérieur du front
+                    it = nouvTriangles.erase(it);
+                } else {
+                    ++it;
+                }
+            }// Ajouter les segments du super triangle au front
             Segment* seg1 = new Segment((smallestSegment->sommets)[0], thirdPoint);
             Segment* seg2 = new Segment(thirdPoint, (smallestSegment->sommets)[1]);
             ajouterSegment(seg1);
@@ -374,67 +445,6 @@ vector<Triangle> Front::genererTriangle() {
             return nouvTriangles;
         }
     }
-    // Créer trois triangles en reliant le premier point aux sommets du super triangle
-    Triangle triangle1((superTriangle.sommets)[0], (superTriangle.sommets)[1], &(points_int.front()));
-    Triangle triangle2((superTriangle.sommets)[1], (superTriangle.sommets)[2], &(points_int.front()));
-    Triangle triangle3((superTriangle.sommets)[2], (superTriangle.sommets)[0], &(points_int.front()));
-    // Ajouter ces triangles à la liste de triangles de sortie
-    nouvTriangles.push_back(triangle1);
-    nouvTriangles.push_back(triangle2);
-    nouvTriangles.push_back(triangle3);
-    // Supprimer le premier point de la liste intérieure
-    points_int.erase(points_int.begin());
-
-    for (Sommet& pointk : points_int) {     // Parcourt des points intérieurs au super triangle
-        // Triangles dont les cercles circonscrits contiennent pointk
-        vector<Triangle> Tk ;
-        for (auto it = nouvTriangles.begin(); it != nouvTriangles.end(); ++it) {
-            if ((*it).in_circle_triangle(pointk)) {
-                Tk.push_back(*it) ;
-                if (Tk.size() == 2) {
-                    break;
-                }
-            }
-        }
-        vector<Sommet> Tk_sommets;              // Sommets des triangles de Tk
-        for (const auto& triangle : Tk) {
-            for (const auto& sommet : triangle.sommets) {
-                // Vérifie si le sommet existe déjà dans Tk_sommets
-                auto it = find(Tk_sommets.begin(), Tk_sommets.end(), *sommet);
-                if (it == Tk_sommets.end()) {
-                    // Si le sommet n'est pas déjà présent, l'ajouter à Tk_sommets_uniques
-                    Tk_sommets.push_back(*sommet);
-                }
-            }
-        }
-        // Supprimer de nouvTriangles les triangles Tk :
-        for (Triangle& triangle : Tk) {
-            nouvTriangles.erase(remove(nouvTriangles.begin(), nouvTriangles.end(), triangle), nouvTriangles.end());
-        }    
-        // Créer les 4 triangles reliant pointk aux 4 sommets de Tk_sommets :
-        int n = Tk_sommets.size() ;
-        for (int i = 0; i < n ; ++i) {
-            Triangle triangle(&Tk_sommets[i], &Tk_sommets[(i+1)%n], &pointk);
-            nouvTriangles.push_back(triangle);
-        }
-    }
-    for (auto it = nouvTriangles.begin(); it != nouvTriangles.end();) {
-        Triangle& triangle = *it;
-        bool removeTriangle = false;
-        for (Sommet* sommet : triangle.sommets) {
-            if (!int_front(*sommet)) {  // Vérifier si le sommet est à l'intérieur du front
-                removeTriangle = true;
-                break;
-            }
-        }
-        if (removeTriangle) {   // Supprimer le triangle si un de ses sommets n'est pas à l'intérieur du front
-            it = nouvTriangles.erase(it);
-        } else {
-            ++it;
-        }
-    }
-    // Appliquer miseajour aux segments depuis smallestSegment jusqu'au segment dont sommet[1] est smallestSegment->sommets[1]
-    return nouvTriangles;
 }
 
 //====================================================================================================
