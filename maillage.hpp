@@ -99,6 +99,7 @@ public:
     bool empty() const {return segments.empty();}       // Vérifier si le front est vide
     void save();                                        // Sauvegarder le front
     void miseajour(Segment* seginit);           // Mettre à jour le front à partir d'un segment initial à la méthode de Delaunay
+    void print();                                 // Afficher le front
 };
 
 //====================================================================================================

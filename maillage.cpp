@@ -238,7 +238,7 @@ bool Front::int_front(const Sommet Point){
     // on vérifie si le triplet (premier point du segment, deuxième point du segment, point considéré) est orienté dans le sens direct)
     for (auto it = segments.begin(); it != segments.end(); ++it) {
         for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
-            if ( ((*it2)->sommets[1]->x - (*it2)->sommets[0]->x)*(Point.y - (*it2)->sommets[0]->y) - ((*it2)->sommets[1]->y - (*it2)->sommets[0]->y)*(Point.x - (*it2)->sommets[0]->x) < 0) {
+            if ( ((*it2)->sommets[1]->x - (*it2)->sommets[0]->x)*(Point.y - (*it2)->sommets[0]->y) - ((*it2)->sommets[1]->y - (*it2)->sommets[0]->y)*(Point.x - (*it2)->sommets[0]->x) <= 0) {
                 return false;
             }
         }
@@ -290,6 +290,15 @@ void Front::miseajour(Segment* seginit){
         }
     }
 }
+void Front::print() {
+    for (const auto& pair : segments) {
+        for (const auto& segment : pair.second) {
+            cout << "(" << segment->sommets[0]->x << ", " << segment->sommets[0]->y << ") ";
+            cout << "(" << segment->sommets[1]->x << ", " << segment->sommets[1]->y << ") ";
+        }
+    }
+    cout << endl;
+}
 vector<Triangle> Front::genererTriangle() { 
     vector<Triangle> nouvTriangles ;    // Triangles de sortie
     if (segments.empty()) {
@@ -298,26 +307,25 @@ vector<Triangle> Front::genererTriangle() {
     }
     const Segment* smallestSegment = segments.begin()->second.front();  // Récupérer le plus petit segment de la map
     float longueur = smallestSegment->longueur();
-    // Troisième point du triangle équilatéral
+    // Coordonnées du troisième point formant un triangle équilatéral avec smallestSegment
     double x3 = (smallestSegment->sommets[1]->x + smallestSegment->sommets[0]->x) / 2.0 - (smallestSegment->sommets[1]->y - smallestSegment->sommets[0]->y) * (sqrt(3) / 2.0) ;
     double y3 = (smallestSegment->sommets[1]->y + smallestSegment->sommets[0]->y) / 2.0 + (smallestSegment->sommets[1]->x - smallestSegment->sommets[0]->x) * (sqrt(3) / 2.0) ;
     double precision = 1e-14 ;
-    x3 = round(x3 / precision) * precision ; // Correction des erreurs epsilon machine
+    x3 = round(x3 / precision) * precision ;        // Correction des erreurs epsilon machine
     y3 = round(y3 / precision) * precision ;
     Sommet* thirdPoint = new Sommet(x3, y3);
     
-    // Si un point est à une distance suffisamment proche, utiliser ce point comme troisième point du triangle
-    for (const Sommet& point : points) {
+    // Si un point du front est à une distance suffisamment proche, l'utiliser comme troisième point
+    for (Sommet& point : points) {
         double distance = sqrt(pow(point.x - x3, 2) + pow(point.y - y3, 2));
         if (distance < longueur / 10.0) {
-            *thirdPoint = point;
+            thirdPoint = &point ;
             break;
         }
     }
     cout << "thirdPoint = (" << thirdPoint->x << ", " << thirdPoint->y << ")" << endl;
-    // Créer le super triangle de la méthode de Delaunay
-    Triangle superTriangle((smallestSegment->sommets)[0], (smallestSegment->sommets)[1], thirdPoint);
-    // (attention , il faudra redefinir quels sont les segments qui font partie du nouveau front
+
+    Triangle superTriangle((smallestSegment->sommets)[0], (smallestSegment->sommets)[1], thirdPoint);   // Super triangle de la méthode de Delaunay
 
     // Algorithme de Bowyer-Watson :
     // Liste des points intérieurs au super triangle
@@ -329,6 +337,7 @@ vector<Triangle> Front::genererTriangle() {
     }
     if (points_int.empty()) {
         if (!int_front(*thirdPoint)) {  // Vérifier si le sommet est à l'intérieur du front
+        // Déterminer ce que l'on fait dans ce cas
             return nouvTriangles;
         }
         else {
@@ -338,6 +347,7 @@ vector<Triangle> Front::genererTriangle() {
             Segment* seg2 = new Segment(thirdPoint, (smallestSegment->sommets)[1]);
             ajouterSegment(seg1);
             ajouterSegment(seg2);
+            miseajour(seg1);
             
             return nouvTriangles;
         }

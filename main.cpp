@@ -64,12 +64,11 @@ int main() {
     const Segment* segmentsHexagone[] = {&AB, &BC, &CD, &DE, &EF, &FA};
 
     Front front(segmentsHexagone, 6);
-    cout << "OK1" << endl;
+    front.print();
     
-
     // Génération des triangles à partir du front hexagonal
     vector<Triangle> triangles = front.genererTriangle();
-    cout << "OK2" << endl;
+
     // Affichage des triangles générés
     for (size_t i = 0; i < triangles.size(); ++i) {
         cout << "Triangle " << i+1 << ": ";
@@ -77,6 +76,7 @@ int main() {
         cout << "(" << triangles[i].sommets[1]->x << "," << triangles[i].sommets[1]->y << ") ";
         cout << "(" << triangles[i].sommets[2]->x << "," << triangles[i].sommets[2]->y << ")" << endl;
     }
+    front.print();
 //*************************************************************************************************************
 
     return 0;
