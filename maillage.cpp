@@ -289,6 +289,27 @@ void Front::miseajour(const Segment* seginit){
             supprimerSegment(seg);
         }
     }
+    // Supprimer les points qui sont à l'extérieur du front après la mise à jour
+    for (auto it = points.begin(); it != points.end();) {
+        if (!int_front(*it)) {
+            it = points.erase(it);
+        } else {
+            ++it;
+        }
+    }
+    // Suupprimer les aller-retours de segments dans le front
+    // C'est à dire les doublets de segments qui ont le même longueur et qui ont pour sommets[0] et sommets[1] inversés
+    for (auto it = segments.begin(); it != segments.end(); ++it) {
+        for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
+            for (auto it3 = it2; it3 != it->second.end(); ++it3) {
+                if (it2 != it3 && *((*it2)->sommets[0]) == *((*it3)->sommets[1]) && *((*it2)->sommets[1]) == *((*it3)->sommets[0])) {
+                    it->second.erase(it2);
+                    it->second.erase(it3);
+                    break;
+                }
+            }
+        }
+    }
 }
 void Front::print() {
     for (const auto& pair : segments) {
