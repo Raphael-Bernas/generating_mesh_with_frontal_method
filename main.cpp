@@ -64,9 +64,10 @@ int main() {
     const Segment* segmentsHexagone[] = {&AB, &BC, &CD, &DE, &EF, &FA};
 
     Front front(segmentsHexagone, 6);
+    cout << "Front hexagonal initial : " << endl;
     front.print();
     
-    cout << "OK1" << endl;
+    cout << "Premier triangle genere : " << endl;
     // Génération des triangles à partir du front hexagonal
     vector<Triangle> triangles = front.genererTriangle();
     // Affichage des triangles générés
@@ -76,17 +77,17 @@ int main() {
         cout << "(" << triangles[i].sommets[1]->x << "," << triangles[i].sommets[1]->y << ") ";
         cout << "(" << triangles[i].sommets[2]->x << "," << triangles[i].sommets[2]->y << ")" << endl;
     }
+    cout << "Nouveau front apres generation du triangle : " << endl;
     front.print();
-    cout << "OK2" << endl;
-    // Génération des triangles à partir du front hexagonal
+    cout << "Deuxieme triangle genere : " << endl;
     triangles = front.genererTriangle();
-    // Affichage des triangles générés
     for (size_t i = 0; i < triangles.size(); ++i) {
         cout << "Triangle " << i+1 << ": ";
         cout << "(" << triangles[i].sommets[0]->x << "," << triangles[i].sommets[0]->y << ") ";
         cout << "(" << triangles[i].sommets[1]->x << "," << triangles[i].sommets[1]->y << ") ";
         cout << "(" << triangles[i].sommets[2]->x << "," << triangles[i].sommets[2]->y << ")" << endl;
     }
+    cout << "Nouveau front apres la deuxieme occurence : " << endl;
     front.print();
 //*************************************************************************************************************
 

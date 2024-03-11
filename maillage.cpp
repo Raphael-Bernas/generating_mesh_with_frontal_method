@@ -310,21 +310,6 @@ void Front::miseajour(const Segment* seginit){
             }
         }
     }
-    // // Supprimer les segments dont les coordonnées des extrémités ne sont pas dans points
-    // for (auto it = segments.begin(); it != segments.end();) {
-    //     for (auto it2 = it->second.begin(); it2 != it->second.end();) {
-    //         if (find(points.begin(), points.end(), *((*it2)->sommets[0])) == points.end() || find(points.begin(), points.end(), *((*it2)->sommets[1])) == points.end()) {
-    //             it2 = it->second.erase(it2);
-    //         } else {
-    //             ++it2;
-    //         }
-    //     }
-    //     if (it->second.empty()) {
-    //         it = segments.erase(it);
-    //     } else {
-    //         ++it;
-    //     }
-    // }
 }
 void Front::print() {
     for (const auto& pair : segments) {
