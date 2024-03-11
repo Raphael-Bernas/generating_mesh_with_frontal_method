@@ -287,7 +287,7 @@ void Front::Divise_Front(double h) {
             double longueurSegment = grandSegment->longueur();
             
             // Calcul du nombre de segments à générer
-            int nbSegments = static_cast<int>(std::round(longueurSegment / h));
+            int nbSegments = static_cast<int>(round(longueurSegment / h));
             if (nbSegments < 2) {
                 continue; // Pas besoin de diviser le segment s'il est trop court
             }
@@ -304,7 +304,7 @@ void Front::Divise_Front(double h) {
             // Création et ajout des nouveaux segments
             auto itSommet = nouveauxSommets.begin();
             for (int i = 0; i < nbSegments; ++i) {
-                Segment* petitSegment = new Segment(*itSommet, *(std::next(itSommet)));
+                Segment* petitSegment = new Segment(*itSommet, *(next(itSommet)));
                 ajouterSegment(petitSegment);
                 ++itSommet;
             }
@@ -321,32 +321,26 @@ void Front::Divise_Front(double h) {
 }
 void Front::polygone_regulier(int n) {
     if (n < 3) {
-        std::cerr << "Error: A polygon must have at least 3 sides." << std::endl;
+        cerr << "Error: A polygon must have at least 3 sides." << endl;
         return;
     }
-
     double angle = 2 * M_PI / n; // Angle entre deux sommets consécutifs
     double rayon = 10.0; // Rayon du cercle circonscrit au polygone (à ajuster selon vos besoins)
     Sommet centre(0, 0); // Centre du polygone (vous pouvez modifier cela selon vos besoins)
-
     for (int i = 0; i < n; ++i) {
-        double x = centre.x + rayon * std::cos(i * angle);
-        double y = centre.y + rayon * std::sin(i * angle);
-
+        double x = centre.x + rayon * cos(i * angle);
+        double y = centre.y + rayon * sin(i * angle);
         const Sommet* sommet = new Sommet(x, y); // Créer un nouveau sommet
-
         // Si c'est le deuxième sommet ou plus
         if (i >= 1) {
             const Sommet* sommetPrecedent = &points[i - 1];
             const Segment* segment = new Segment(const_cast<Sommet*>(sommetPrecedent), const_cast<Sommet*>(sommet)); // Créer le segment
-
             ajouterSegment(segment); // Ajouter le segment à la triangulation
             ajouterPoint(*sommet); // Ajouter le sommet à la liste des sommets
         } else {
             ajouterPoint(*sommet); // Ajouter le premier sommet à la liste des sommets
         }
     }
-
     // Relier le dernier sommet avec le premier pour fermer le polygone
     const Sommet* sommetDernier = &points.back();
     const Sommet* premierSommet = &points.front();
@@ -363,7 +357,7 @@ void Front::polygone_random(int n) {
     // Générer les sommets aléatoires pour le polygone
     int i = 0;
     while (i < n &&  N_tot < N_max) {
-        std::cout << "segment number :" << N_tot <<std::endl;
+        cout << "segment number :" << N_tot <<endl;
         N_tot = N_tot + 1;
         double x = distribution(rng); // Coordonnée x aléatoire
         double y = distribution(rng); // Coordonnée y aléatoire
@@ -398,7 +392,7 @@ void Front::polygone_random(int n) {
     }
     // Relier le dernier sommet avec le premier pour fermer le polygone
     const Sommet* sommetDernier = &points.back();
-    std::cout << "sommet x :" << sommetDernier->x <<std::endl;
+    cout << "sommet x :" << sommetDernier->x <<endl;
     const Sommet* premierSommet = &points.front();
     const Segment* dernierSegment = new Segment(const_cast<Sommet*>(sommetDernier), const_cast<Sommet*>(premierSommet)); // Créer le dernier segment
     ajouterSegment(dernierSegment); // Ajouter le dernier segment à la triangulation
@@ -736,7 +730,7 @@ void Triangulation::fusionnerMaillages(const Triangulation& autre) {
 }
 void Triangulation::rotation(double angle) {
     // Rotation de chaque point sauf le point central
-    for (std::vector<Sommet*>::size_type i = 1; i < sommets.size(); ++i) {
+    for (vector<Sommet*>::size_type i = 1; i < sommets.size(); ++i) {
         double x = sommets[i]->x;
         double y = sommets[i]->y;
 
