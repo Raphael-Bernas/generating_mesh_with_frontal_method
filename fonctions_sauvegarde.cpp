@@ -1,3 +1,4 @@
+#include "maillage.hpp"
 #include <fstream>      // Lecture/écriture de fichiers
 #include <list>         // Utilisation de list
 #include <iostream>     // Entrée/sortie standard
