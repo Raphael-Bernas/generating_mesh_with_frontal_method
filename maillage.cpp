@@ -311,10 +311,15 @@ const Segment* Front::miseajour(const Segment* seginit){
         double yseg = seg->sommets[1]->y - seg->sommets[0]->y ;
         double prodscal = xsegprec*xseg + ysegprec*yseg ;
         double angle = acos(prodscal/(sqrt(xsegprec*xsegprec + ysegprec*ysegprec) * sqrt(xseg*xseg + yseg*yseg))) ;
-        if (angle <= min) {
+        // Si l'angle est nul, c'est qu'il est en réalité de 2 pi. Il faut donc le retourner
+        if (angle == 0) {
+            angle = 2*M_PI ;
+            segment_a_garder = seg ;
+        }
+        else if (angle <= min) {
             min = angle ;
             segment_a_garder = seg ;
-        }                
+        }
     }
     // Suppression de segments de tous les segments de segments_suivants_segprec autres que segment_a_garder
     for (const Segment* seg : segments_suivants_segprec) {
@@ -503,7 +508,7 @@ vector<Triangle> Front::genererTriangle() {
             break;
         }
     }
-    cout << "thirdPoint = (" << thirdPoint->x << ", " << thirdPoint->y << ")" << endl;
+    // cout << "thirdPoint = (" << thirdPoint->x << ", " << thirdPoint->y << ")" << endl;
 
     Triangle superTriangle((smallestSegment->sommets)[0], (smallestSegment->sommets)[1], thirdPoint);   // Super triangle de la méthode de Delaunay
 
@@ -911,38 +916,54 @@ MaillageFront::MaillageFront(char modele, float Hpas): Triangulation() {
 }
 bool MaillageFront::MethodeFrontal(){
     if (TheFront->empty()) {
-        std::cerr << "Error: No Front To Proceed" << std::endl; 
+        cerr << "Error: No Front To Proceed" << endl; 
         return  false;
     }
     bool State = true;
-    std::cout << "Initialisation successfull !" << std::endl;
+    cout << "Initialisation successfull !" << endl;
     while (State) {
-        // Appliquer GenererTriangle
+        TheFront->save();   // Sauvegarde du front à chaque itération
         vector<Triangle> FrontCalc = TheFront->genererTriangle();
-        TheFront->save();
-        for(int i = 0; i < int(sizeof(FrontCalc)); ++i){
-            Triangle* New_Triangle = &FrontCalc[i];
-            Sommet* New_Sommet1 = New_Triangle->sommets[0];
-            Sommet* New_Sommet2 = New_Triangle->sommets[1];
-            Sommet* New_Sommet3 = New_Triangle->sommets[2];
-            std::cout << "test final" << std::endl;
-            triangles.push_back(New_Triangle);
-            if(*find(sommets.begin(), sommets.end(), New_Sommet1 ) != New_Sommet1) {
-                sommets.push_back(New_Sommet1);
-            }
-            if(*find(sommets.begin(), sommets.end(), New_Sommet2 ) != New_Sommet2) {
-                sommets.push_back(New_Sommet2);
-            }
-            if(*find(sommets.begin(), sommets.end(), New_Sommet3 ) != New_Sommet3) {
-                sommets.push_back(New_Sommet3);
+        for (const auto& triangle : FrontCalc) {
+            Triangle* newTriangle = new Triangle(triangle.sommets[0], triangle.sommets[1], triangle.sommets[2]);
+            cout << "Triangle " << ": ";
+            cout << "(" << triangle.sommets[0]->x << "," << triangle.sommets[0]->y << ") ";
+            cout << "(" << triangle.sommets[1]->x << "," << triangle.sommets[1]->y << ") ";
+            cout << "(" << triangle.sommets[2]->x << "," << triangle.sommets[2]->y << ")" << endl;
+            TheFront->print();
+            triangles.push_back(newTriangle);
+            for (int i = 0; i < 3; ++i) {
+                Sommet* newSommet = triangle.sommets[i];
+                if (find(sommets.begin(), sommets.end(), newSommet) == sommets.end()) {
+                    sommets.push_back(newSommet);
+                }
             }
         }
-        if(TheFront->compteSegment() == 3){
+        // for(int i = 0; i < int(sizeof(FrontCalc)); ++i){
+        //     Triangle* New_Triangle = &FrontCalc[i];
+        //     cout << "test 1" << endl;
+        //     Sommet* New_Sommet1 = New_Triangle->sommets[0];
+        //     Sommet* New_Sommet2 = New_Triangle->sommets[1];
+        //     Sommet* New_Sommet3 = New_Triangle->sommets[2];
+        //     cout << "test final" << endl;
+        //     triangles.push_back(New_Triangle);
+        //     if(*find(sommets.begin(), sommets.end(), New_Sommet1 ) != New_Sommet1) {
+        //         sommets.push_back(New_Sommet1);
+        //     }
+        //     if(*find(sommets.begin(), sommets.end(), New_Sommet2 ) != New_Sommet2) {
+        //         sommets.push_back(New_Sommet2);
+        //     }
+        //     if(*find(sommets.begin(), sommets.end(), New_Sommet3 ) != New_Sommet3) {
+        //         sommets.push_back(New_Sommet3);
+        //     }
+        // }
+        if (TheFront->compteSegment() == 3) {
+            cout << "Frontal Method Done !" << endl;
             State = false;
         }
-        if(TheFront->compteSegment() == 0){
-            std::cerr << "Error: No Convergence of Frontal Method" << std::endl; 
-            return  false;
+        if (TheFront->compteSegment() == 0) {
+            cerr << "Erreur: Aucune convergence de la méthode frontale." << endl;
+            return false;
         }
     }
     // Création du dernier triangle
