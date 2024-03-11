@@ -245,43 +245,48 @@ bool Front::int_front(const Sommet Point){
     }
     return true;
 }
-void Front::miseajourfront() {
-    // Parcourir les segments du front pour en trouver deux qui ont le même point de départ sommets[0]
+void Front::miseajour(Segment* seginit){
+    // Parcourir les segments du front pour trouver le segment précédant seginit (dans le sens trigo)
+    // C'est à dire le segment qui a pour sommets[1] le sommet[0] de smallestSegment
+    const Segment* segprec ;
     for (auto it = segments.begin(); it != segments.end(); ++it) {
         for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
-            Sommet* pointdouble = (*it2)->sommets[0];
-            for (auto it3 = it2; it3 != it->second.end(); ++it3) {
-                if (*pointdouble == *((*it3)->sommets[0])) {
-                    // Si deux segments ont le même point de départ, on recherche un segment qui a pointdouble pour point d'arrivée sommets[1]
-                    const Segment * segprec ;
-                    for (auto it4 = segments.begin(); it4 != segments.end(); ++it4) {
-                        for (auto it5 = it4->second.begin(); it5 != it4->second.end(); ++it5) {
-                            if (*((*it5)->sommets[1]) == *pointdouble) {
-                                segprec = *it5 ;
-                                break;
-                            }
-                        }
-                    }
-                    // Calculs de produits scalaires permettant d'établir lequel des deux segments forme
-                    // le plus petit angle avec segprec dans le sens direct
-                    double xsegprec = segprec->sommets[0]->x - pointdouble->x ;
-                    double ysegprec = segprec->sommets[0]->y - pointdouble->y ;
-                    double xit2 = (*it2)->sommets[1]->x - pointdouble->x ;
-                    double yit2 = (*it2)->sommets[1]->y - pointdouble->y ;
-                    double xit3 = (*it3)->sommets[1]->x - pointdouble->x ;
-                    double yit3 = (*it3)->sommets[1]->y - pointdouble->y ;
-                    double prodscalit2 = xsegprec*xit2 + ysegprec*yit2 ;
-                    double prodscalit3 = xsegprec*xit3 + ysegprec*yit3 ;
-                    double angleit2 = acos(prodscalit2/(sqrt(xsegprec*xsegprec + ysegprec*ysegprec) * sqrt(xit2*xit2 + yit2*yit2))) ;
-                    double angleit3 = acos(prodscalit3/(sqrt(xsegprec*xsegprec + ysegprec*ysegprec) * sqrt(xit3*xit3 + yit3*yit3))) ;
-                    // Suppression du segment formant le plus petit angle avec segprec dans le sens direct
-                    if (angleit2 < angleit3) {
-                        supprimerSegment(*it2);
-                    } else {
-                        supprimerSegment(*it3);
-                    }
-                }
+            if (*((*it2)->sommets[1]) == *(seginit->sommets[0])) {
+                segprec = *it2 ;
+                break;
             }
+        }
+    }
+    // Parcourir les segments du front pour trouver les segments suivant segprec (dans le sens trigo)
+    // C'est à dire les segments qui ont pour sommets[0] le sommet[1] de segprec
+    vector<const Segment*> segments_suivants_segprec;
+    for (auto it = segments.begin(); it != segments.end(); ++it) {
+        for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
+            if (*((*it2)->sommets[0]) == *(segprec->sommets[1])) {
+                segments_suivants_segprec.push_back(*it2);
+            }
+        }
+    }
+    // Calculs des produits scalaires permettant d'établir lequel des segments de segments_suivants_segprec
+    // forme le plus grand angle avec segprec dans le sens direct
+    const Segment * segment_a_garder ;
+    double min = 2*M_PI ;
+    for (const Segment* seg : segments_suivants_segprec) {
+        double xsegprec = segprec->sommets[0]->x - segprec->sommets[1]->x ;
+        double ysegprec = segprec->sommets[0]->y - segprec->sommets[1]->y ;
+        double xseg = seg->sommets[1]->x - seg->sommets[0]->x ;
+        double yseg = seg->sommets[1]->y - seg->sommets[0]->y ;
+        double prodscal = xsegprec*xseg + ysegprec*yseg ;
+        double angle = acos(prodscal/(sqrt(xsegprec*xsegprec + ysegprec*ysegprec) * sqrt(xseg*xseg + yseg*yseg))) ;
+        if (angle <= min) {
+            min = angle ;
+            segment_a_garder = seg ;
+        }                
+    }
+    // Suppression de segments de tous les segments de segments_suivants_segprec autres que segment_a_garder
+    for (const Segment* seg : segments_suivants_segprec) {
+        if (!(*seg == *segment_a_garder)) {
+            supprimerSegment(seg);
         }
     }
 }
@@ -333,10 +338,7 @@ vector<Triangle> Front::genererTriangle() {
             Segment* seg2 = new Segment(thirdPoint, (smallestSegment->sommets)[1]);
             ajouterSegment(seg1);
             ajouterSegment(seg2);
-            // Supprimer du Front courant le segment qui a servi à générer le super triangle
-            supprimerSegment(smallestSegment);
-            miseajourfront();
-
+            
             return nouvTriangles;
         }
     }
