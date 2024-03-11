@@ -338,7 +338,6 @@ vector<Triangle> Front::genererTriangle() {
     if (points_int.empty()) {
         if (!int_front(*thirdPoint)) {  // Vérifier si le sommet est à l'intérieur du front
         // Déterminer ce que l'on fait dans ce cas
-            cout << "hey" << endl;
             return nouvTriangles;
         }
         else {
