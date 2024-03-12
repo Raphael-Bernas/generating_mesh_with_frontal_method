@@ -164,7 +164,9 @@ int main() {
     MaillageFront maillageFront(&front);
 
     maillageFront.MethodeFrontal();
-    front.print();
+
+// Conversions en fichiers txt lisibles par MATLAB :
+    maillageFront.exportMATLAB("maillage_front.txt") ;
 
     return 0;
 }
