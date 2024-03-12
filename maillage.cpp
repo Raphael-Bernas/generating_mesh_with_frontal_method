@@ -209,13 +209,9 @@ Front::Front(const Segment** Nsegments, vector<Sommet> Npoints) {
 }
 Front::Front(const Segment** Nsegments, int taille) {
     for  (int i = 0; i < taille; ++i) {
-        // cout << "iteration " << i << endl;
         ajouterSegment(Nsegments[i]);
         for (int j = 0; j < 2; ++j) {
             ajouterPoint(*(*Nsegments)->sommets[j]);
-            // cout << "Point (" << j << ") : " ;
-            // cout << ((Nsegments[i]->sommets[j])->x) << " , ";
-            // cout << ((Nsegments[i]->sommets[j])->y) << " ajoute" << endl;
         }
     }
 }
@@ -351,23 +347,19 @@ void Front::polygone_random(int n) {
     int N_max = 100;
     int N_tot = 0;
     // Initialisation du générateur de nombres aléatoires
-    std::mt19937 rng(std::time(nullptr));
-    std::uniform_real_distribution<double> distribution(0.0, 100.0);
-
+    mt19937 rng(std::time(nullptr));
+    uniform_real_distribution<double> distribution(0.0, 100.0);
     // Générer les sommets aléatoires pour le polygone
     int i = 0;
     while (i < n &&  N_tot < N_max) {
-        cout << "segment number :" << N_tot <<endl;
         N_tot = N_tot + 1;
         double x = distribution(rng); // Coordonnée x aléatoire
         double y = distribution(rng); // Coordonnée y aléatoire
         const Sommet* sommet = new Sommet(x, y); // Créer un nouveau sommet
-
         // Si c'est le deuxième sommet ou plus
         if (i >= 1) {
             const Sommet* sommetPrecedent = &points[i - 1];
             const Segment* segment = new Segment(const_cast<Sommet*>(sommetPrecedent), const_cast<Sommet*>(sommet)); // Créer le segment
-
             // Vérifier s'il croise un des segments précédents
             bool intersection = false;
             for (auto it = segments.begin(); it != segments.end(); ++it) {
@@ -379,7 +371,6 @@ void Front::polygone_random(int n) {
                     }
                 }
             }
-
             // Si aucun croisement n'est détecté, ajouter le segment à la triangulation
             if (!intersection) {
                 ajouterSegment(segment); // Ajouter le segment à la triangulation
@@ -392,7 +383,6 @@ void Front::polygone_random(int n) {
     }
     // Relier le dernier sommet avec le premier pour fermer le polygone
     const Sommet* sommetDernier = &points.back();
-    cout << "sommet x :" << sommetDernier->x <<endl;
     const Sommet* premierSommet = &points.front();
     const Segment* dernierSegment = new Segment(const_cast<Sommet*>(sommetDernier), const_cast<Sommet*>(premierSommet)); // Créer le dernier segment
     ajouterSegment(dernierSegment); // Ajouter le dernier segment à la triangulation
@@ -538,7 +528,6 @@ vector<Triangle> Front::genererTriangle() {
             break;
         }
     }
-    // cout << "thirdPoint = (" << thirdPoint->x << ", " << thirdPoint->y << ")" << endl;
 
     Triangle superTriangle((smallestSegment->sommets)[0], (smallestSegment->sommets)[1], thirdPoint);   // Super triangle de la méthode de Delaunay
 
@@ -644,8 +633,25 @@ vector<Triangle> Front::genererTriangle() {
 }
 
 //====================================================================================================
-void Triangulation::exportMATLAB(const string& nomFichier) const {
+void Triangulation::exportMATLAB(const string& nomFichier) {
 // Conversion en un fichier txt lisible sur MATLAB
+    for (const auto& sommet : sommets) {
+        for (const auto& sommet2 : sommets) {
+            if (sommet != sommet2 && *sommet == *sommet2) {
+                // Mise à jour des pointeurs dans les triangles qui contiennent sommet2
+                for (const auto& triangle : triangles) {
+                    for (int i = 0; i < 3; ++i) {
+                        if (triangle->sommets[i] == sommet2) {
+                            triangle->sommets[i] = sommet;
+                        }
+                    }
+                }
+                // Enlever le doublon sommet2 de sommets
+                sommets.erase(remove(sommets.begin(), sommets.end(), sommet2), sommets.end());
+            }
+        }
+    }
+
     ofstream fichier(nomFichier) ;              // Création du fichier
     for (const auto& sommet : sommets) {        // Écriture des sommets
         fichier <<"0 " ;    // Empreinte "Sommet" pour le script MATLAB
@@ -658,7 +664,7 @@ void Triangulation::exportMATLAB(const string& nomFichier) const {
             if (triangle->sommets[0] == sommets[i] || 
                 triangle->sommets[1] == sommets[i] ||
                 triangle->sommets[2] == sommets[i]) {
-                    fichier <<i+1 <<" " ;       // Écrire l'indice du sommet dans le fichier
+                    fichier << i+1 <<" " ;       // Écrire l'indice du sommet dans le fichier
             }
         }
     fichier << "\n" ;
@@ -936,7 +942,9 @@ void MaillageSecteurAngulaire::genererSecteurAngulaire() {
         MaillageSecteurAngulaire maillage(rayon, anglek, floor(N / k) + 1);
         for (int i = 1; i < k; ++i) {
             MaillageSecteurAngulaire maillagei(rayon, anglek, floor(N / k) + 1);
+            maillagei.exportMATLAB("maillage_secteurangulaire1.txt") ;
             maillagei.rotation(i * anglek);
+            maillagei.exportMATLAB("maillage_secteurangulaire2.txt") ;
             maillage.fusionnerMaillages(maillagei);
         }
         fusionnerMaillages(maillage); // Assignation au maillage courant
@@ -953,43 +961,23 @@ bool MaillageFront::MethodeFrontal(){
         return  false;
     }
     bool State = true;
-    cout << "Initialisation successfull !" << endl;
     while (State) {
         TheFront->save();   // Sauvegarde du front à chaque itération
         vector<Triangle> FrontCalc = TheFront->genererTriangle();
         for (const auto& triangle : FrontCalc) {
             Triangle* newTriangle = new Triangle(triangle.sommets[0], triangle.sommets[1], triangle.sommets[2]);
+            triangles.push_back(newTriangle);
             cout << "Triangle " << ": ";
             cout << "(" << triangle.sommets[0]->x << "," << triangle.sommets[0]->y << ") ";
             cout << "(" << triangle.sommets[1]->x << "," << triangle.sommets[1]->y << ") ";
             cout << "(" << triangle.sommets[2]->x << "," << triangle.sommets[2]->y << ")" << endl;
             TheFront->print();
-            triangles.push_back(newTriangle);
+            // Parcourir chaque sommet du triangle
             for (int i = 0; i < 3; ++i) {
                 Sommet* newSommet = triangle.sommets[i];
-                if (find(sommets.begin(), sommets.end(), newSommet) == sommets.end()) {
-                    sommets.push_back(newSommet);
-                }
+                sommets.push_back(newSommet);
             }
         }
-        // for(int i = 0; i < int(sizeof(FrontCalc)); ++i){
-        //     Triangle* New_Triangle = &FrontCalc[i];
-        //     cout << "test 1" << endl;
-        //     Sommet* New_Sommet1 = New_Triangle->sommets[0];
-        //     Sommet* New_Sommet2 = New_Triangle->sommets[1];
-        //     Sommet* New_Sommet3 = New_Triangle->sommets[2];
-        //     cout << "test final" << endl;
-        //     triangles.push_back(New_Triangle);
-        //     if(*find(sommets.begin(), sommets.end(), New_Sommet1 ) != New_Sommet1) {
-        //         sommets.push_back(New_Sommet1);
-        //     }
-        //     if(*find(sommets.begin(), sommets.end(), New_Sommet2 ) != New_Sommet2) {
-        //         sommets.push_back(New_Sommet2);
-        //     }
-        //     if(*find(sommets.begin(), sommets.end(), New_Sommet3 ) != New_Sommet3) {
-        //         sommets.push_back(New_Sommet3);
-        //     }
-        // }
         if (TheFront->compteSegment() == 3) {
             cout << "Frontal Method Done !" << endl;
             State = false;
@@ -999,35 +987,24 @@ bool MaillageFront::MethodeFrontal(){
             return false;
         }
     }
-    // Création du dernier triangle
-    Triangle* Final_Triangle;
-    int i_state = 0;
-    for (const auto& pair : TheFront->segments) {
-        list<const Segment*> listeSegments = pair.second;
-        for (const Segment* segment : listeSegments) {
-            if(!(Final_Triangle->in_triangle(*(segment->sommets[0])))){
-                Final_Triangle->sommets[i_state] = segment->sommets[0];
-                i_state = i_state + 1;
-                if(*find(sommets.begin(), sommets.end(), segment->sommets[0] ) != segment->sommets[0]) {
-                    sommets.push_back(segment->sommets[0]);
-                }
-            }
-            if(!(Final_Triangle->in_triangle(*(segment->sommets[1])))){
-                Final_Triangle->sommets[i_state] = segment->sommets[1];
-                i_state = i_state + 1;
-                if(*find(sommets.begin(), sommets.end(), segment->sommets[1] ) != segment->sommets[1]) {
-                    sommets.push_back(segment->sommets[1]);
-                }
-            }
-            if(i_state == 3){
-                break;
-            }
-        }
-        if(i_state == 3){
-                break;
-        }
+    // Récupérer les trois premiers sommets des trois derniers segments restants
+    vector<Sommet*> sommetsDerniersSegments;
+    auto itSegments = TheFront->segments.end();
+    --itSegments; // Déplacer l'itérateur vers le dernier élément du map
+    for (int i = 0; i < 3; ++i) {
+        auto itSegment = prev(itSegments)->second.begin();              // Obtient l'itérateur sur le premier segment des derniers trois
+        sommetsDerniersSegments.push_back((*itSegment)->sommets[0]);    // Premier sommet du segment
+        ++itSegments;
     }
-    triangles.push_back(Final_Triangle);
+    // Ajouter les sommets de sommetsDerniersSegments à la liste de sommets
+    for (auto sommet : sommetsDerniersSegments) {
+        sommets.push_back(sommet);
+    }
+    // Créer un triangle à partir des trois premiers sommets des trois derniers segments
+    Triangle* dernierTriangle = new Triangle(sommetsDerniersSegments[0], sommetsDerniersSegments[1], sommetsDerniersSegments[2]);
+    // Ajouter le dernier triangle à la liste des triangles
+    triangles.push_back(dernierTriangle);
+    cout << "Done !!!" << endl;
     return true;
 }
 

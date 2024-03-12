@@ -124,7 +124,7 @@ public:
 
     Triangulation() {}      // Constructeur
 
-    void exportMATLAB(const string& nomFichier) const ;
+    void exportMATLAB(const string& nomFichier) ;
     // Conversion en un fichier txt lisible sur MATLAB
     void fusionnerMaillages(const Triangulation& autre) ;
     void rotation(double angle) ;

@@ -19,7 +19,7 @@ int main() {
     // vector<double> abscisses = {0.0, 1.0, 1.9, 2.5, 3.8, 4.0, 5.0} ;
     // vector<double> ordonnees = {0.0, 0.7, 1.7, 2.0, 2.3, 2.9, 3.0} ;
     // MaillageRectangle maillageNonRegulier(5.0, 3.0, abscisses, ordonnees) ; // Maillage rectangle non régulier
-    // double angle = M_PI * 5 / 4 ;
+    // double angle = M_PI * 4 / 5 ;
     // MaillageSecteurAngulaire maillageAngle(6.0, angle, 50) ;    // Maillage secteur angulaire
 
     // double angle = M_PI / 4 ;
