@@ -635,23 +635,6 @@ vector<Triangle> Front::genererTriangle() {
 //====================================================================================================
 void Triangulation::exportMATLAB(const string& nomFichier) {
 // Conversion en un fichier txt lisible sur MATLAB
-    for (const auto& sommet : sommets) {
-        for (const auto& sommet2 : sommets) {
-            if (sommet != sommet2 && *sommet == *sommet2) {
-                // Mise à jour des pointeurs dans les triangles qui contiennent sommet2
-                for (const auto& triangle : triangles) {
-                    for (int i = 0; i < 3; ++i) {
-                        if (triangle->sommets[i] == sommet2) {
-                            triangle->sommets[i] = sommet;
-                        }
-                    }
-                }
-                // Enlever le doublon sommet2 de sommets
-                sommets.erase(remove(sommets.begin(), sommets.end(), sommet2), sommets.end());
-            }
-        }
-    }
-
     ofstream fichier(nomFichier) ;              // Création du fichier
     for (const auto& sommet : sommets) {        // Écriture des sommets
         fichier <<"0 " ;    // Empreinte "Sommet" pour le script MATLAB
