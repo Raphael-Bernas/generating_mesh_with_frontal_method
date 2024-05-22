@@ -1,5 +1,5 @@
 # SIM202
-
+An english version of this Read.me can be found at the end (please do keep in mind that it was computer-translated and could contain mistakes)
 # Execution :
 Afin d'exécuter le code veuillez utiliser la commande 'make', pour supprimer les fichiers générées 'make clean'
 
@@ -132,4 +132,100 @@ Le script permet également de personnaliser la visualisation en ajoutant des é
 
 ## Conclusion
 Ce script est utile pour charger et visualiser rapidement des données de maillage à partir d'un fichier texte. Il offre également des options de personnalisation pour ajuster la présentation de la visualisation selon les préférences de l'utilisateur.
+
+# ENGLISH VERSION
+Please do keep in mind that it was computer-translated and could contain mistakes
+# Execution:
+To execute the code, please use the 'make' command, and to remove the generated files, use 'make clean'.
+# Mesh - Header:
+This file contains classes and methods for manipulating and generating meshes in C++.
+## Elementary Classes
+- `Sommet` (Vertex): Represents a point in space defined by its coordinates `x` and `y`.
+- `Triangle`: Represents a triangle defined by three vertices.
+- `Arete` (Edge): Represents an edge of a triangle.
+- `Segment`: Represents a line segment between two vertices.
+- `Domaine` (Domain): Represents a domain defined by triangles and edges.
+## Frontal Method and its derivatives
+- `Front`: Manages a frontal data structure for triangle generation.
+## Triangulation Class and its derivatives
+- `Triangulation`: Manages a collection of vertices, triangles, edges, and domains.
+- `MaillageRectangle` (RectangularMesh): Derived from `Triangulation`, allows generating a regular or irregular rectangular mesh.
+- `MaillageSecteurAngulaire` (AngularSectorMesh): Derived from `Triangulation`, allows generating a mesh for a given angular sector.
+- `MaillageFront` (FrontMesh): Derived from `Triangulation`, uses a frontal method to generate a mesh.
+# Mesh - Implementation:
+This file (`Maillage.cpp`) contains the implementation of classes and methods for manipulating and generating triangular meshes in C++.
+## Elementary Classes
+### `Sommet` (Vertex)
+- Overload of the `==` operator to compare two vertices.
+### `Triangle`
+- Constructor to initialize a triangle with three vertices.
+- Overload of the `==` operator to compare two triangles.
+- Methods to check if a point is inside the triangle, calculate the center of the circumcircle and its radius.
+### `Arete` (Edge)
+- Overload of the `==` operator to compare two edges.
+- Methods to determine a vertex of the edge, calculate the length of the edge, check if two edges intersect, and for sorting edges by size.
+### `Segment`
+- Constructor to initialize a segment with two vertices.
+- Methods to calculate the length of the segment, compare two segments, check if two segments intersect, and for the dot product.
+### `Domaine` (Domain)
+- Overload of the `==` operator to compare two domains.
+- This overload compares the triangles and edges of two domains as well as their dimension.
+## Frontal Method and its derivatives
+### `Front`
+- Constructor taking an array of pointers to segments and a vector of vertices to initialize a front.
+- Constructor taking an array of pointers to segments and a size to initialize a front.
+- Methods to count the number of segments in the front, add a segment to the front, remove a segment from the front, add a vertex to the front, remove a vertex from the front, check if a vertex is inside the front, update the front from an initial segment, and remove redundant segments and vertices outside the front.
+- Method `print()`: Displays the segments of the front with their coordinates.
+- Method `genererTriangle()`: Generates triangles from the segments of the front. This method follows the Bowyer-Watson algorithm to construct Delaunay triangles.
+  - It starts by creating a super triangle that encompasses all the points of the front.
+  - It returns the generated triangles.
+### `Triangulation`
+- Method `exportMATLAB(const string& fileName) const`: Exports the vertices and triangles of the triangulation to a MATLAB-readable text file. Each vertex is represented by its coordinates (x, y), and each triangle is represented by the indices of its vertices.
+- Method `fusionnerMaillages(const Triangulation& other)`: Merges two triangulations by merging their vertices, triangles, and domains while avoiding duplicates.
+- Method `rotation(double angle)`: Performs a rotation of all the points in the triangulation around a central point.
+- Method `translation(double deltaX, double deltaY)`: Performs a translation of all the points in the triangulation by the specified delta values on the x and y axes.
+- Method `homothetie(double factor)`: Performs a scaling of all the points in the triangulation with respect to a central point using a given scaling factor.
+- Method `symetriePoint(double pointX, double pointY)`: Performs a reflection of all the points in the triangulation with respect to a specified point.
+- Method `symetrieAxeOblique(double x0, double y0, double angle)`: Performs a reflection of all the points in the triangulation with respect to an oblique axis specified by a point and an angle.
+### `MaillageRectangle` (RectangularMesh)
+- Method `genererMaillageRectangle(double width, double height, int nx, int ny)`: Generates a regular rectangular mesh by dividing a rectangle of given dimensions into nx * ny elementary rectangles, with a random cut for each rectangle.
+- Method `genererMaillageRectangle(double width, double height, const vector<double>& abscissas, const vector<double>& ordinates)`: Generates a non-regular rectangular mesh using specified lists of abscissas and ordinates.
+### `MaillageSecteurAngulaire` (AngularSectorMesh)
+- Constructor `MaillageSecteurAngulaire(double radius, double angle, int N)`: Initializes an angular sector mesh with a radius, an angle, and a number of points.
+- Method `generersecteurangleaigu()`: Generates an angular sector mesh for an acute angle.
+- Method `genererSecteurAngulaire()`: Generates an angular sector mesh for an arbitrary angle.
+### `MaillageFront` (FrontMesh)
+- Constructor `MaillageFront(Front* aFront)`: Initializes a mesh from a front.
+- Constructor `MaillageFront(char model, float step)`: Initializes a mesh with a specified model and step.
+- Method `MethodeFrontal()`: Performs the frontal method to generate the mesh from the front.
+### Saving
+- Method `save()` in `Triangulation`: Saves the current state of the mesh to a text file `historique_M.txt`.
+- Method `save()` in `Front`: Saves the current state of the front to a text file `historique_F.txt`.
+# Explanation of the MATLAB script visio_evolution.m
+## Objective
+The script `visio_evolution.m` loads the evolution data of a mesh and a front from text files, and then visualizes them at each step.
+## Loading the data
+The script starts by loading the data from the files `historique_M.txt` and `historique_F.txt`, which respectively contain the evolution of the mesh and the front. Please modify these values if you want to change the result text files.
+## Processing the mesh data
+The script processes the mesh data by treating each step separately. For each step:
+- The vertices are stored in the matrix `sommets` (vertices).
+- The triangles are stored in the matrix `triangles`.
+- At the end of each step, the mesh is visualized using the `triplot` and `scatter` functions.
+## Processing the front data
+After visualizing the mesh, the script processes the front data for each step. It adds the corresponding vertices to the `sommets` matrix and visualizes the front using the `scatter` function. A one-second pause is made between each step.
+## Conclusion
+This script is useful for visualizing the evolution of a mesh and a front at each step, which can facilitate the analysis and debugging of associated algorithms.
+# Explanation of the MATLAB script visualisationmaillage.m
+## Objective
+The script `visualisationmaillage.m` loads mesh data from a text file, which you will need to modify with your path, and then visualizes this data.
+## Loading the data
+The script starts by loading the mesh data from the specified text file (`maillage_regulier.txt`, `maillage_nonregulier.txt`, or `maillage_secteurangulaire.txt`). The data is extracted to obtain the vertices and triangles.
+## Visualizing the mesh
+Once the data is loaded, the script visualizes the mesh using the `triplot` and `scatter` functions.
+- The `triplot` function plots the triangles of the mesh using the coordinates of the vertices.
+- The `scatter` function displays the vertices in red.
+## Customizing the visualization
+The script also allows customizing the visualization by adding axis labels, adjusting the axis limits, adding a grid, etc. These options can be enabled or disabled depending on the needs.
+## Conclusion
+This script is useful for quickly loading and visualizing mesh data from a text file. It also offers customization options to adjust the presentation of the visualization according to user preferences.
 
