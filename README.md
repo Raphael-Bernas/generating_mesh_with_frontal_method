@@ -1,5 +1,5 @@
 # SIM202
-An english version of this Read.me can be found at the end (please do keep in mind that it was computer-translated and could contain mistakes)
+An english version of this Read.me can be found at the end.
 # Execution :
 Afin d'exécuter le code veuillez utiliser la commande 'make', pour supprimer les fichiers générées 'make clean'
 
